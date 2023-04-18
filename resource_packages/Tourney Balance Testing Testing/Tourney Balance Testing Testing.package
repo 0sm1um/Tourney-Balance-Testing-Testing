@@ -1,0 +1,11 @@
+mod = [
+	"Tourney Balance Testing Testing"
+]
+
+package = [
+	"resource_packages/Tourney Balance Testing Testing/Tourney Balance Testing Testing"
+]
+
+lua = [
+	"scripts/mods/Tourney Balance Testing Testing/*"
+]
