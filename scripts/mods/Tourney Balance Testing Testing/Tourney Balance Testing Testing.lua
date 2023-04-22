@@ -77,19 +77,22 @@ end
 
 -- Activation and deactivation command:
 mod:command("testing", "Toggle TB Testing Testing Changes, synchronise changes with lobby.", function()
-	if mod.is_on == true then
-		local old_settings = table.clone(mod.settings)
-		load_mod_settings()
-		if check_legality_of_setting_changes(old_settings, mod.settings) == false then
-			mod:echo("WARNING: TB Testing Testing has code active while different changes are attempted to be loaded. Please restart your game to ensure tests unload correctly.")
-			mod.settings = old_mod_settings
-			return
+	if Managers.player.is_server then
+		if mod.is_on == true then
+			local old_settings = table.clone(mod.settings)
+			load_mod_settings()
+			if check_legality_of_setting_changes(old_settings, mod.settings) == false then
+				mod:echo("WARNING: TB Testing Testing has code active while different changes are attempted to be loaded. Please restart your game to ensure tests unload correctly.")
+				mod.settings = old_mod_settings
+				return
+			end
 		end
+		load_mod_settings()
+		sync_mod_settings()
+		apply_settings()
+		mod.is_on = true
+		mod:chat_broadcast("TB Testing Testing ENABLED")
+	else
+		mod:echo("WARNING: Only Host may activate TB Testing Testing changes.")
 	end
-	load_mod_settings()
-	sync_mod_settings()
-	apply_settings()
-	mod.is_on = true
-	mod:chat_broadcast("TB Testing Testing ENABLED")
-
 end)
