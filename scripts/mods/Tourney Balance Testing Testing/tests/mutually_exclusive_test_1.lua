@@ -5,408 +5,832 @@ local option = mod.settings.mutually_exclusive_test_1
 if option == 2 then
 ----
 
--- Text Localization
-local _language_id = Application.user_setting("language_id")
-local _localization_database = {}
-mod._quick_localize = function (self, text_id)
-    local mod_localization_table = _localization_database
-    if mod_localization_table then
-        local text_translations = mod_localization_table[text_id]
-        if text_translations then
-            return text_translations[_language_id] or text_translations["en"]
-        end
+-- Buff and Talent Functions
+local function merge(dst, src)
+    for k, v in pairs(src) do
+        dst[k] = v
     end
+    return dst
 end
-function mod.add_text(self, text_id, text)
-    if type(text) == "table" then
-        _localization_database[text_id] = text
-    else
-        _localization_database[text_id] = {
-            en = text
-        }
-    end
-end
-mod:hook("Localize", function(func, text_id)
-    local str = mod:_quick_localize(text_id)
-    if str then return str end
-    return func(text_id)
-end)
-NewDamageProfileTemplates = NewDamageProfileTemplates or {}
-function mod:add_buff(buff_name, buff_data)
-    local new_buff = {
+function mod.add_talent_buff_template(self, hero_name, buff_name, buff_data, extra_data)   
+    local new_talent_buff = {
         buffs = {
             merge({ name = buff_name }, buff_data),
         },
     }
-    BuffTemplates[buff_name] = new_buff
+    if extra_data then
+        new_talent_buff = merge(new_talent_buff, extra_data)
+    elseif type(buff_data[1]) == "table" then
+        new_talent_buff = {
+            buffs = buff_data,
+        }
+        if new_talent_buff.buffs[1].name == nil then
+            new_talent_buff.buffs[1].name = buff_name
+        end
+    end
+    TalentBuffTemplates[hero_name][buff_name] = new_talent_buff
+    BuffTemplates[buff_name] = new_talent_buff
     local index = #NetworkLookup.buff_templates + 1
     NetworkLookup.buff_templates[index] = buff_name
     NetworkLookup.buff_templates[buff_name] = index
 end
+function mod.modify_talent_buff_template(self, hero_name, buff_name, buff_data, extra_data)   
+    local new_talent_buff = {
+        buffs = {
+            merge({ name = buff_name }, buff_data),
+        },
+    }
+    if extra_data then
+        new_talent_buff = merge(new_talent_buff, extra_data)
+    elseif type(buff_data[1]) == "table" then
+        new_talent_buff = {
+            buffs = buff_data,
+        }
+        if new_talent_buff.buffs[1].name == nil then
+            new_talent_buff.buffs[1].name = buff_name
+        end
+    end
 
--- on_remove_stack_down
---[[
-mod:hook_origin(BuffExtension, "remove_buff", function (self, id, skip_net_sync, full_remove)
-	local buffs = self._buffs
-	local end_time = Managers.time:time("game")
-	local num_buffs_removed = 0
-	local buff_extension_function_params = buff_extension_function_params
-	local num_buffs = self._num_buffs
-	buff_extension_function_params.t = end_time
-	buff_extension_function_params.end_time = end_time
+    local original_buff = TalentBuffTemplates[hero_name][buff_name]
+    local merged_buff = original_buff
+    for i=1, #original_buff.buffs do
+        if new_talent_buff.buffs[i] then
+            merged_buff.buffs[i] = merge(original_buff.buffs[i], new_talent_buff.buffs[i])
+        elseif original_buff[i] then
+            merged_buff.buffs[i] = merge(original_buff.buffs[i], new_talent_buff.buffs)
+        else
+            merged_buff.buffs = merge(original_buff.buffs, new_talent_buff.buffs)
+        end
+    end
 
-	for i = 1, self._num_buffs, 1 do
-		local buff = buffs[i]
-		local template = buff.template
+    TalentBuffTemplates[hero_name][buff_name] = merged_buff
+    BuffTemplates[buff_name] = merged_buff
+end
+function mod.add_buff_template(self, buff_name, buff_data)   
+    local new_talent_buff = {
+        buffs = {
+            merge({ name = buff_name }, buff_data),
+        },
+    }
+    BuffTemplates[buff_name] = new_talent_buff
+    local index = #NetworkLookup.buff_templates + 1
+    NetworkLookup.buff_templates[index] = buff_name
+    NetworkLookup.buff_templates[buff_name] = index
+end
+function mod.add_proc_function(self, name, func)
+    ProcFunctions[name] = func
+end
+function mod.add_buff_function(self, name, func)
+    BuffFunctionTemplates.functions[name] = func
+end
+function mod.modify_talent(self, career_name, tier, index, new_talent_data)
+	local career_settings = CareerSettings[career_name]
+    local hero_name = career_settings.profile_name
+	local talent_tree_index = career_settings.talent_tree_index
 
-		if (id and buff.id == id) or (buff.parent_id and id and buff.parent_id == id) then
-			local on_remove_stack_down = template.on_remove_stack_down
-			if on_remove_stack_down and not full_remove then
-				self:_remove_sub_buff(buff, i, buff_extension_function_params)
+	local old_talent_name = TalentTrees[hero_name][talent_tree_index][tier][index]
+	local old_talent_id_lookup = TalentIDLookup[old_talent_name]
+	local old_talent_id = old_talent_id_lookup.talent_id
+	local old_talent_data = Talents[hero_name][old_talent_id]
 
-				local new_buff_count = #buffs
-				num_buffs_removed = num_buffs_removed + num_buffs - new_buff_count
-				num_buffs = new_buff_count
-				self._buffs[i].start_time = Managers.time:time("game")
-			else
-				buff_extension_function_params.bonus = buff.bonus
-				buff_extension_function_params.multiplier = buff.multiplier
-				buff_extension_function_params.value = buff.value
-				buff_extension_function_params.attacker_unit = buff.attacker_unit
+    Talents[hero_name][old_talent_id] = merge(old_talent_data, new_talent_data)
+end
+function mod.add_buff(self, owner_unit, buff_name)
+    if Managers.state.network ~= nil then
+        local network_manager = Managers.state.network
+        local network_transmit = network_manager.network_transmit
 
-				self:_remove_sub_buff(buff, i, buff_extension_function_params, false)
-			end
-		end
-	end
+        local unit_object_id = network_manager:unit_game_object_id(owner_unit)
+        local buff_template_name_id = NetworkLookup.buff_templates[buff_name]
+        local is_server = Managers.player.is_server
 
-	if self._num_buffs == 0 then
-		Managers.state.entity:system("buff_system"):set_buff_ext_active(self._unit, false)
-	end
+        if is_server then
+            local buff_extension = ScriptUnit.extension(owner_unit, "buff_system")
 
-	if not skip_net_sync then
-		self:_remove_buff_synced(id)
-	end
+            buff_extension:add_buff(buff_name)
+            network_transmit:send_rpc_clients("rpc_add_buff", unit_object_id, buff_template_name_id, unit_object_id, 0, false)
+        else
+            network_transmit:send_rpc_server("rpc_add_buff", unit_object_id, buff_template_name_id, unit_object_id, 0, true)
+        end
+    end
+end
+function mod.add_talent(self, career_name, tier, index, new_talent_name, new_talent_data)
+    local career_settings = CareerSettings[career_name]
+    local hero_name = career_settings.profile_name
+    local talent_tree_index = career_settings.talent_tree_index
 
-	self:_free_sync_id(id)
+    local new_talent_index = #Talents[hero_name] + 1
+
+    Talents[hero_name][new_talent_index] = merge({
+        name = new_talent_name,
+        description = new_talent_name .. "_desc",
+        icon = "icons_placeholder",
+        num_ranks = 1,
+        buffer = "both",
+        requirements = {},
+        description_values = {},
+        buffs = {},
+        buff_data = {},
+    }, new_talent_data)
+
+    TalentTrees[hero_name][talent_tree_index][tier][index] = new_talent_name
+    TalentIDLookup[new_talent_name] = {
+        talent_id = new_talent_index,
+        hero_name = hero_name
+    }
+end
+
+--Handmaiden
+CareerSettings.we_maidenguard.attributes.max_hp = 150
+
+--Handmaiden Talents
+--Aura
+mod:modify_talent_buff_template("wood_elf", "kerillian_maidenguard_passive_stamina_regen_aura", {
+    range = 15
+})
+
+--THP finese
+mod:modify_talent("we_maidenguard", 1, 3, {
+    name = "elf_thp_finese_name",
+    description = "elf_thp_finese_desc",
+	buffs = {
+	"kerillian_finese_THP"
+	}
+})
+mod:add_text("elf_thp_finese_name", "Elven Precision")
+mod:add_text("elf_thp_finese_desc", "Melle crital strikes and headshots restore 2 temporary health. Critical headshots restores twice as much.")
+
+mod:add_talent_buff_template("wood_elf", "kerillian_finese_THP", {
+	multiplier = 1,
+	name = "regrowth",
+	event_buff = true,
+	buff_func = "rebaltourn_heal_finesse_damage_on_melee",
+	event = "on_hit",
+	perk = "ninja_healing"
+})
+
+--Focused Spirit
+mod:modify_talent("we_maidenguard", 2, 1, {
+    description = "elf_hm_hitless_desc",
+    description_values = {},
+	buffs = {
+	"kerillian_maidenguard_power_level_on_unharmed",
+	"kerillian_maidenguard_headshot"
+	}	
+})
+mod:add_text("elf_hm_hitless_desc", "After not taking damage for 3 seconds, increases Kerillian's power by 20.0%%, friendly fire will not remove the focus. Increase headshot damage by 25%%.")
+
+mod:add_proc_function("lr_maidenguard_reset_unharmed_buff", function (owner_unit, buff, params)
+    local attacker_unit = params[1]
+    local damage_amount = params[2]
+    local damaged = true
+    local side = Managers.state.side.side_by_unit[owner_unit]
+    local player_and_bot_units = side.PLAYER_AND_BOT_UNITS
+    local shot_by_friendly = false
+    local allies = (player_and_bot_units and #player_and_bot_units) or 0
+
+    if damage_amount and damage_amount == 0 then
+        damaged = false
+    end
+
+    for i = 1, allies, 1 do
+        local ally_unit =  player_and_bot_units[i]
+        if ally_unit == attacker_unit then
+            shot_by_friendly = true
+        end
+    end
+
+    if Unit.alive(owner_unit) and not shot_by_friendly and damaged then
+        local buff_extension = ScriptUnit.has_extension(owner_unit, "buff_system")
+        local buff_name = "kerillian_maidenguard_power_level_on_unharmed_cooldown"
+        local network_manager = Managers.state.network
+        local network_transmit = network_manager.network_transmit
+        local unit_object_id = network_manager:unit_game_object_id(owner_unit)
+        local buff_template_name_id = NetworkLookup.buff_templates[buff_name]
+
+        if Managers.state.network.is_server then
+            buff_extension:add_buff(buff_name, {
+                attacker_unit = owner_unit
+            })
+        else
+            network_transmit:send_rpc_server("rpc_add_buff", unit_object_id, buff_template_name_id, unit_object_id, 0, true)
+        end
+
+        return true
+    end
 end)
 
-mod:hook_origin(BuffExtension, "update", function (self, unit, input, dt, context, t)
-	local world = self.world
-	local buffs = self._buffs
-	local buff_extension_function_params = buff_extension_function_params
-	buff_extension_function_params.t = t
-	local queue = self._remove_buff_queue
+mod:modify_talent_buff_template("wood_elf", "kerillian_maidenguard_power_level_on_unharmed", {
+    multiplier = 0.20,
+    buff_func = "lr_maidenguard_reset_unharmed_buff"
+})
 
-	if queue then
-		self._remove_buff_queue = nil
+mod:modify_talent_buff_template("wood_elf", "kerillian_maidenguard_power_level_on_unharmed_cooldown", {
+    duration = 3
+})
+ 
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_headshot", {
+	stat_buff = "headshot_multiplier",
+	multiplier = 0.25
+})
 
-		for i = 1, #queue, 1 do
-			self:remove_buff(queue[i])
-		end
-	end
+-- Oak Stance  
+mod:modify_talent("we_maidenguard", 2, 2, {
+    name = "elf_oak_buff_name",
+    description = "elf_oak_buff_desc",
+    num_ranks = 1,
+    buffer = "both",
+    icon = "kerillian_maidenguard_crit_chance",
+    buffs = {
+        "kerillian_maidenguard_crit_chance_buff"
+    }
+})
+mod:add_text("elf_oak_buff_name", "Oak Stance")
+mod:add_text("elf_oak_buff_desc", "Hitting an enemy provides 1%% power bonus, and 0,5%% attack speed and critical chance bonus for 4 seconds. Stacks up to 20 times.")
 
-	for i = 1, self._num_buffs, 1 do
-		local buff = buffs[i]
+ProcFunctions["add_aok_combat_buff"] = function(owner_unit, buff, params)
+    if Unit.alive(owner_unit) then
+        local talent_extension = ScriptUnit.extension(owner_unit, "talent_system")
+        local buff_extension = ScriptUnit.extension(owner_unit, "buff_system")
+		buff_extension:add_buff("kerillian_maidenguard_power_on_hit_buff")
+		buff_extension:add_buff("kerillian_maidenguard_crit_on_hit_buff")
+		buff_extension:add_buff("kerillian_maidenguard_speed_on_hit_buff")
+    end
+end
 
-		if not buff.removed then
-			local template = buff.template
-			local end_time = buff.duration and buff.start_time + buff.duration
-			local ticks = template.ticks
-			local current_ticks = buff.current_ticks
-			buff_extension_function_params.bonus = buff.bonus
-			buff_extension_function_params.multiplier = buff.multiplier
-			buff_extension_function_params.value = buff.value
-			buff_extension_function_params.end_time = end_time
-			buff_extension_function_params.attacker_unit = buff.attacker_unit
-			buff_extension_function_params.source_attacker_unit = buff.source_attacker_unit
-			local done_ticking = ticks and ticks <= current_ticks
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_crit_chance_buff", {
+    event = "on_hit",
+    buff_func = "add_aok_combat_buff",
+})
 
-			if (end_time and end_time <= t) or (not end_time and done_ticking) then
-				local on_remove_stack_down = template.on_remove_stack_down
-            	local buff_name = template.name
-				local on_remove_stack_down_done = {}
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_power_on_hit_buff", {
+    {
+        refresh_durations = true,
+        icon = "kerillian_maidenguard_crit_chance",
+        duration = 4,
+        stat_buff = "power_level",
+        max_stacks = 20,
+        multiplier = 0.01
+    }
+})
 
-            	if on_remove_stack_down and on_remove_stack_down_done[buff_name] == nil then
-					mod:echo(on_remove_stack_down)
-                	local current_stacks = self:num_buff_type(buff_name)
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_crit_on_hit_buff", {
+    {
+        refresh_durations = true,
+        duration = 4,
+        stat_buff = "critical_strike_chance",
+        max_stacks = 20,
+        bonus = 0.005
+    }
+})
 
-                	self:_remove_sub_buff(buff, i, buff_extension_function_params, true)
-                	on_remove_stack_down_done[buff_name] = true
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_speed_on_hit_buff", {
+    {
+        refresh_durations = true,
+        duration = 4,
+        stat_buff = "attack_speed",
+        max_stacks = 20,
+        multiplier  = 0.005
+    }
+})
 
-               		if current_stacks == 1 then
-                    	if template.buff_after_delay and not buff.aborted then
-                        	local delayed_buff_name = buff.delayed_buff_name
+--Asrai Alacrity
+mod:modify_talent_buff_template("wood_elf", "kerillian_maidenguard_power_on_block_buff", {
+    multiplier = 0.20
+})
+mod:modify_talent("we_maidenguard", 2, 3, {
+    description = "elf_hm_atack_speed_power_block_push_desc",
+    description_values = {},
+})
+mod:add_text("elf_hm_atack_speed_power_block_push_desc", "Pushing or blocking an attack grants the next two strikes 30%% attack speed and 20%% power bonus.")
 
-                        	if buff.delayed_buff_params then
-                        	    local delayed_buff_params = buff.delayed_buff_params
+--Willow Stance
+mod:modify_talent_buff_template("wood_elf", "kerillian_maidenguard_passive_attack_speed_on_dodge_buff", {
+    max_stacks = 4
+})
+mod:modify_talent("we_maidenguard", 4, 1, {
+    description = "elf_hm_dodge_atack_speed_desc",
+    description_values = {},
+})
+mod:add_text("elf_hm_dodge_atack_speed_desc", "Dodging grants 5%% attack speed bonus for 6 seconds. Stacks up to 4 times.")
 
-                	            self:add_buff(delayed_buff_name, delayed_buff_params)
-                	        else
-                	            self:add_buff(delayed_buff_name)
-                	        end
-                	    end
-                	end
-            	elseif on_remove_stack_down and on_remove_stack_down_done[buff_name] then
-					mod:echo(on_remove_stack_down)
-                	buff.start_time = t
-            	else
-					self:_remove_sub_buff(buff, i, buff_extension_function_params, true)
-					mod:echo(on_remove_stack_down)
+--Dance of blades
+mod:modify_talent("we_maidenguard", 4, 2, {
+    name = "elf_dodge_buff_name",
+    description = "elf_dodge_buff_desc",
+    num_ranks = 1,
+    buffer = "both",
+    icon = "kerillian_maidenguard_cooldown_on_nearby_allies",
+    buffs = {
+        "kerillian_maidenguard_versatile_dodge_new"
+    }
+})
+mod:add_text("elf_dodge_buff_name", "Dance of Blades")
+mod:add_text("elf_dodge_buff_desc", "Dodging while blocking increases dodge range by 30%%. Dodging while not blocking increases the critical chance by 15%% for 2 seconds.")
 
-					if template.buff_after_delay and not buff.aborted then
-						local delayed_buff_name = buff.delayed_buff_name
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_versatile_dodge_new", {
+    {
+        event = "on_dodge",
+        attack_buff_to_add = "kerillian_maidenguard_crit_on_dodge",
+        buff_func = "maidenguard_footwork_buff",
+        dodge_buffs_to_add = {
+            "kerillian_maidenguard_improved_dodge_new",
+            "kerillian_maidenguard_improved_dodge_speed_new"
+        }
+    }
+})
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_improved_dodge_new", {
+    {
+        buff_func = "maidenguard_footwork_on_dodge_end",
+        event = "on_dodge_finished",
+        remove_buff_func = "remove_movement_buff",
+        apply_buff_func = "apply_movement_buff",
+        multiplier = 1.301, 
+        path_to_movement_setting_to_modify = {
+            "dodging",
+            "distance_modifier"
+        }
+    }
+})
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_improved_dodge_speed_new", {
+    {
+        buff_func = "maidenguard_footwork_on_dodge_end",
+        event = "on_dodge_finished",
+        remove_buff_func = "remove_movement_buff",
+        apply_buff_func = "apply_movement_buff",
+        multiplier = 1.301, 
+        path_to_movement_setting_to_modify = {
+            "dodging",
+            "speed_modifier"
+        }
+    }
+})
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_crit_on_dodge", {
+    {
+		icon = "kerillian_maidenguard_cooldown_on_nearby_allies",
+		stat_buff = "critical_strike_chance",
+		refresh_durations = true,
+        bonus = 0.15,
+        max_stacks = 1,
+        duration = 2
+    }
+})
 
-						if buff.delayed_buff_params then
-							local delayed_buff_params = buff.delayed_buff_params
 
-							self:add_buff(delayed_buff_name, delayed_buff_params)
-						else
-							self:add_buff(delayed_buff_name)
-						end
-					end
-            	end
-			elseif not done_ticking then
-				local update_func = template.update_func
+--Wraith Walk
+mod:modify_talent("we_maidenguard", 4, 3, {
+    name = "elf_ww_name",
+    description = "elf_ww_desc",
+    num_ranks = 1,
+    buffer = "both",
+    icon = "kerillian_maidenguard_passive_noclip_dodge",
+    buffs = {
+        "elf_ww_active"
+    }
+})
+mod:add_text("elf_ww_name", "Ghost Step")
+mod:add_text("elf_ww_desc", "Dodging increases cleave power by 35%% for 2 seconds.")
 
-				if update_func then
-					local next_update_t = buff._next_update_t
+ProcFunctions["elf_ww_buff"] = function(owner_unit, buff, params)
+    if Unit.alive(owner_unit) then
+        local talent_extension = ScriptUnit.extension(owner_unit, "talent_system")
+        local buff_extension = ScriptUnit.extension(owner_unit, "buff_system")
+		buff_extension:add_buff("elf_ww")
+    end
+end
 
-					if not next_update_t then
-						next_update_t = t + (buff.template.update_start_delay or 0)
-						buff._next_update_t = next_update_t
-					end
+mod:add_talent_buff_template("wood_elf", "elf_ww_active", {
+    event = "on_dodge",
+    buff_func = "elf_ww_buff"
+})
 
-					if next_update_t <= t then
-						buff_extension_function_params.time_into_buff = t - buff.start_time
-						buff_extension_function_params.time_left_on_buff = end_time and end_time - t
-						local override_update_t = BuffFunctionTemplates.functions[update_func](unit, buff, buff_extension_function_params, world)
+mod:add_talent_buff_template("wood_elf", "elf_ww", {
+    {
+        icon = "kerillian_maidenguard_passive_noclip_dodge",
+        refresh_durations = true,
+        stat_buff = "power_level_melee_cleave",
+        multiplier = 0.35,
+        max_stacks = 1,
+        duration = 2
+    }
+})
 
-						if not override_update_t then
-							slot23 = buff.template.update_frequency or 0
-							slot23 = t + slot23
-						end
+--Heart of Oak
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_damage_reduction_aura", {
+    buff_to_add = "kerillian_maidenguard_damage_reduction_aura_buff",
+    update_func = "activate_buff_on_distance",
+    remove_buff_func = "remove_aura_buff",
+    range = 15
+ })
+ 
+ mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_damage_reduction_aura_buff", {
+    max_stacks = 1,
+    icon = "kerillian_maidenguard_max_stamina",
+    stat_buff = "damage_taken",
+    multiplier = -0.1
+ })
+ 
+  mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_heal_buff", {
+    max_stacks = 1,
+    stat_buff = "healing_received",
+    multiplier = 0.2
+ })
+ 
+ mod:modify_talent("we_maidenguard", 5, 1, {
+     description = "kerillian_maidenguard_damage_reduction_aura_desc",
+	 buffer = "server",
+     buffs = {
+	 "kerillian_maidenguard_damage_reduction_aura",
+	 "kerillian_maidenguard_heal_buff"}
+ })
+ mod:add_text("kerillian_maidenguard_damage_reduction_aura_desc", "Heart of Oak increases all healing on Kerillian by 20%% and provides a damage reduction aura of 10.0%%.")
 
-						buff._next_update_t = slot23
+--Birch Stance
+mod:modify_talent("we_maidenguard", 5, 2, {
+    name = "elf_block_push_name",
+    description = "elf_block_push_desc",
+    num_ranks = 1,
+    buffer = "both",
+    icon = "kerillian_maidenguard_block_cost",
+    buffs = {
+		"kerillian_push_range",
+		"kerillian_block_angle",
+		"kerillian_push_power",
+		"kerillian_maidenguard_block_cost"
+    }
+})
+mod:add_text("elf_block_push_name", "Birch Stance")
+mod:add_text("elf_block_push_desc", "Doubles Kerillian push range. Block cost reduction and block/push angle are increased by 30%%. Increases power for 1 second after blocking an attack.")
 
-						if current_ticks then
-							buff.current_ticks = current_ticks + 1
-						end
-					end
-				end
-			end
-		end
-	end
+ProcFunctions["elf_block_func"] = function(owner_unit, buff, params)
+    local buff_extension = ScriptUnit.extension(owner_unit, "buff_system")
+    buff_extension:add_buff("kerillian_counter_push")
+end
 
-	local i = 1
-	local removed = 0
+mod:add_talent_buff_template("wood_elf", "kerillian_push_range", {
+    stat_buff = "push_range",
+	bonus = 10
+})
 
-	while i <= self._num_buffs - removed do
-		buffs[i] = buffs[i + removed]
+mod:add_talent_buff_template("wood_elf", "kerillian_block_angle", {
+    stat_buff = "block_angle",
+	multiplier = 0.3
+})
 
-		if not buffs[i] then
-			break
-		elseif buffs[i].removed then
-			removed = removed + 1
-		else
-			i = i + 1
-		end
-	end
+ProcFunctions["elf_push_func"] = function(owner_unit, buff, params)
+    if Unit.alive(owner_unit) then
+        local talent_extension = ScriptUnit.extension(owner_unit, "talent_system")
+        local buff_extension = ScriptUnit.extension(owner_unit, "buff_system")
+		buff_extension:add_buff("kerillian_push_power_buff")
+    end
+end
 
-	for j = i, self._num_buffs, 1 do
-		buffs[j] = nil
-	end
+mod:add_talent_buff_template("wood_elf", "kerillian_push_power", {
+    buff_func = "elf_push_func",
+	event = "on_block"
+})
 
-	self._num_buffs = self._num_buffs - removed
+mod:add_talent_buff_template("wood_elf", "kerillian_push_power_buff", {
+    stat_buff = "push_power",
+	refresh_durations = true,
+	duration = 1,
+	max_stacks = 1,
+	icon = "kerillian_maidenguard_block_cost",
+	multiplier = 4
+})
 
-	if self._num_buffs == 0 then
-		Managers.state.entity:system("buff_system"):set_buff_ext_active(unit, false)
-	end
+--Quiver of Plenty
+mod:modify_talent("we_maidenguard", 5, 3, {
+    name = "elf_quiver_name",
+    description = "elf_quiver_desc",
+    num_ranks = 1,
+	buffer = "client",
+    icon = "kerillian_maidenguard_max_ammo",
+    buffs = {
+	"kerillian_maidenguard_max_ammo",
+	"elf_quiver_ally1",
+	"elf_quiver_ally2",
+	"elf_quiver_ally3",
+	"elf_aim"
+	}
+})
+mod:add_text("elf_quiver_name", "Quiver of Plenty")
+mod:add_text("elf_quiver_desc", "Increases ammunition amount by 50%%. Assisting, healing or reviving an ally recovers 15%% of ammo or 40%% of energy. Reduces aim spread by 50%%.")
+
+mod:modify_talent_buff_template("wood_elf", "kerillian_maidenguard_max_ammo", {
+    multiplier = 0.5
+})
+
+
+ProcFunctions["elf_quiver_func"] = function(owner_unit, buff, params)
+    print("Entering elf_quiver_func")
+    local buff_extension = ScriptUnit.has_extension(owner_unit, "buff_system")
+
+    if buff_extension then
+        if ALIVE[owner_unit] then
+            local weapon_slot = "slot_ranged"
+            local inventory_extension = ScriptUnit.extension(owner_unit, "inventory_system")
+            local slot_data = inventory_extension:get_slot_data(weapon_slot)
+            local right_unit_1p = slot_data.right_unit_1p
+            local left_unit_1p = slot_data.left_unit_1p
+            local right_hand_ammo_extension = ScriptUnit.has_extension(right_unit_1p, "ammo_system")
+            local left_hand_ammo_extension = ScriptUnit.has_extension(left_unit_1p, "ammo_system")
+            local ammo_extension = right_hand_ammo_extension or left_hand_ammo_extension
+
+            if ammo_extension then
+                local ammo_bonus_fraction = 0.15 -- Define the ammo_bonus_fraction variable here
+                local ammo_amount = math.max(math.round(ammo_extension:max_ammo() * ammo_bonus_fraction), 1)
+
+                ammo_extension:add_ammo_to_reserve(ammo_amount)
+            end
+        end
+    end
+end
+
+
+
+mod:add_talent_buff_template("wood_elf", "elf_quiver_ally1", {
+		event = "on_revived_ally",
+		buff_func = "elf_quiver_func"
+})
+
+mod:add_talent_buff_template("wood_elf", "elf_quiver_ally2", {
+		event = "on_healed_ally",
+		buff_func = "elf_quiver_func"
+})
+
+mod:add_talent_buff_template("wood_elf", "elf_quiver_ally3", {
+		event = "on_assisted_ally",
+		buff_func = "elf_quiver_func"
+})
+
+mod:add_talent_buff_template("wood_elf", "elf_aim", {
+		buff_func = "reduced_spread",
+        multiplier = 0.33
+})
+
+mod:add_talent_buff_template("wood_elf", "elf_aim", {
+		buff_func = "reduced_spread",
+        multiplier = 0.50
+})
+
+--Gift of Ladrielle
+mod:modify_talent("we_maidenguard", 6, 1, {
+    description = "elf_gift_desc",
+    num_ranks = 1,
+    buffer = "both",
+    icon = "kerillian_maidenguard_activated_ability_invis_duration",
+    buffs = {
+        "kerillian_maidenguard_activated_ability_invis_duration_buff",
+		"kerillian_maidenguard_activated_ability_invis_duration_buff2"
+    }
+})
+mod:add_text("elf_gift_desc", "Each enemy hit with Dash grants 2%% damage reduction and 2%% increased healing for 12 seconds. Stacks up to 10 times.")
+
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_activated_ability_invis_duration_buff", {
+    event = "on_charge_ability_hit",
+    buff_func = "add_buff",
+	buff_to_add = "kerillian_maidenguard_activated_ability_invis_duration_dmgr_buff"
+})
+
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_activated_ability_invis_duration_buff2", {
+    event = "on_charge_ability_hit",
+    buff_func = "add_buff",
+	buff_to_add = "kerillian_maidenguard_activated_ability_invis_duration_dmgr_buff2"
+})
+
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_activated_ability_invis_duration_dmgr_buff", {
+    {
+        refresh_durations = true,
+        icon = "kerillian_maidenguard_activated_ability_invis_duration",
+        duration = 12,
+        stat_buff = "damage_taken",
+        max_stacks = 10,
+        multiplier = -0.02
+    }
+})
+
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_activated_ability_invis_duration_dmgr_buff2", {
+    {
+        refresh_durations = true,
+        duration = 12,
+        stat_buff = "healing_received",
+        max_stacks = 10,
+        multiplier = 0.02
+    }
+})
+
+--Bladedancer
+mod:modify_talent("we_maidenguard", 6, 2, {
+	name = "elf_bladedance_name",
+    description = "elf_bladedance_desc",
+    num_ranks = 1,
+    buffer = "both",
+    icon = "kerillian_maidenguard_activated_ability_damage",
+    buffs = {
+        "ritual_start",
+		"ritual_start2",
+		"ritual_start3"
+    }
+})
+mod:add_text("elf_bladedance_name", "Aelindiel's Charge")
+mod:add_text("elf_bladedance_desc", "Immensely increases Kerillian block/push angle, push power and range for 4 seconds. Dash makes enemies bleed.")
+
+mod:add_talent_buff_template("wood_elf", "ritual_start", {
+    event = "on_charge_ability_hit",
+    buff_func = "add_buff",
+	buff_to_add = "ritual_push_power",
+})
+
+mod:add_talent_buff_template("wood_elf", "ritual_start2", {
+    event = "on_charge_ability_hit",
+    buff_func = "add_buff",
+	buff_to_add = "ritual_critchance"
+})
+
+mod:add_talent_buff_template("wood_elf", "ritual_start3", {
+    event = "on_charge_ability_hit",
+    buff_func = "add_buff",
+	buff_to_add = "elf_push_range"
+})
+
+mod:add_talent_buff_template("wood_elf", "ritual_push_power", {
+    {	
+		icon = "kerillian_maidenguard_activated_ability_damage",
+		stat_buff = "push_power",
+		refresh_durations = true,
+        multiplier = 3000,
+        max_stacks = 1,
+        duration = 4
+    }
+})
+
+mod:add_talent_buff_template("wood_elf", "ritual_critchance", {
+    {
+		stat_buff = "block_angle",
+		refresh_durations = true,
+        multiplier = 100,
+        max_stacks = 1,
+        duration = 4
+    }
+})
+
+mod:add_talent_buff_template("wood_elf", "elf_push_range", {
+    stat_buff = "push_range",
+	max_stacks = 1,
+    duration = 4,
+	refresh_durations = true,
+	bonus = 20
+})
+
+--Power from pain
+mod:modify_talent("we_maidenguard", 6, 3, {
+    description = "elf_pain_desc",
+    num_ranks = 1,
+    buffer = "both",
+    icon = "kerillian_maidenguard_activated_ability_buff_on_enemy_hit",
+    buffs = {
+	"kerillian_maidenguard_activated_ability_buff_on_enemy_hit",
+	"kerillian_maidenguard_activated_ability_buff_on_enemy_hit2"
+	}
+})
+mod:add_text("elf_pain_desc", "Each enemy hit with Dash grants 1.5%% power bonus, and 5%% critical power bonus for 12 seconds. Stacks up to 10 times.")
+
+
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_activated_ability_buff_on_enemy_hit2", {
+    event = "on_charge_ability_hit",
+    buff_func = "add_buff",
+	buff_to_add = "kerillian_maidenguard_activated_ability_crit_buff2"
+})
+
+mod:add_talent_buff_template("wood_elf", "kerillian_maidenguard_activated_ability_crit_buff2", {
+        refresh_durations = true,
+        duration = 12,
+        stat_buff = "critical_strike_effectiveness",
+        max_stacks = 10,
+        multiplier = 0.05
+})
+
+mod:modify_talent_buff_template("wood_elf", "kerillian_maidenguard_activated_ability_crit_buff", {
+		stat_buff = "power_level",
+		duration = 12,
+		bonus = 0,
+		multiplier = 0.015,
+		max_stacks = 10
+})
+
+
+-- Invisible Dash 
+ mod:add_buff_template("maidenguard_invisibility", {
+    name = "maidenguard_invisibility",
+    icon = "kerillian_maidenguard_activated_ability",
+    duration = 2,
+	max_stacks = 1,
+    refresh_durations = true
+})
+
+mod:add_text("career_active_desc_we_2_2", "Kerillian swiftly dashes forward, moving through enemies. She becomes invisible for 2 seconds.")
+
+mod:hook(CareerAbilityWEMaidenGuard, "_run_ability", function(func, self)
+    func(self)  -- Call the original function
+
+    local owner_unit = self._owner_unit
+    local is_server = self._is_server
+    local local_player = self._local_player
+    local bot_player = self._bot_player
+    local network_manager = self._network_manager
+    local talent_extension = ScriptUnit.extension(owner_unit, "talent_system")
+    local buff_extension = ScriptUnit.extension(owner_unit, "buff_system")
+    
+    if talent_extension:has_talent("kerillian_maidenguard_activated_ability_damage", "wood_elf", true) then
+        buff_extension:add_buff("maidenguard_invisibility")
+    end
+
+    if talent_extension:has_talent("kerillian_maidenguard_activated_ability_buff_on_enemy_hit", "wood_elf", true) then
+        buff_extension:add_buff("maidenguard_invisibility")
+    end
 end)
-]]
 
-local function updateValues()
-	for _, buffs in pairs(TalentBuffTemplates) do
-		table.merge_recursive(BuffTemplates, buffs)
-	end
+mod:hook(BuffExtension, "update", function(func, self, unit, input, dt, context, t)
+    func(self, unit, input, dt, context, t)  -- Make sure to call the original function
 
-	return
+    local status_extension = ScriptUnit.has_extension(self._unit, "status_system")
+    local buff_extension = self
+    local is_server = Managers.state.network.is_server
+    local local_player = Managers.player:local_player().player_unit == unit
+    local bot_player = self._bot_player
 
+    -- First hook logic
+    if status_extension and buff_extension:has_buff_type("maidenguard_invisibility") then
+        if local_player or (is_server and bot_player) then
+            status_extension:set_invisible(true, nil, "maidenguard_invisibility")
+			status_extension:set_noclip(true, "maidenguard_invisibility")
+        end
+    else
+        if local_player or (is_server and bot_player) then
+            status_extension:set_invisible(false, nil, "maidenguard_invisibility")
+			status_extension:set_noclip(false, "maidenguard_invisibility")
+        end
+    end
+
+    -- Second hook logic
+    local owner_unit = self._owner_unit
+    local network_manager = Managers.state.network
+    local network_transmit = network_manager.network_transmit
+    local career_extension = self._career_extension
+    local buff_name = "kerillian_maidenguard_passive_dodge_wraith_active"
+    local talent_extension = ScriptUnit.extension(self._owner_unit, "talent_system")
+
+    if buff_extension:has_buff_type("kerillian_maidenguard_passive_dodge_wraith_active") then
+        if local_player or (is_server and bot_player) then
+            status_extension:set_noclip(true, "kerillian_maidenguard_passive_dodge_wraith_active")
+        end
+    else
+        if local_player or (is_server and bot_player) then
+            status_extension:set_noclip(false, "kerillian_maidenguard_passive_dodge_wraith_active")
+        end
+    end
+	
+end)
+
+
+--Wraith walk passive
+table.insert(PassiveAbilitySettings.we_2.buffs, "kerillian_maidenguard_passive_dodge_wraith")
+
+table.insert(PassiveAbilitySettings.we_2.perks, {
+    display_name = "kerillian_maidenguard_passive_dodge_wraith_name",
+    description = "kerillian_maidenguard_passive_dodge_wraith_desc"
+})
+
+mod:add_text("kerillian_maidenguard_passive_dodge_wraith_name", "Wraith Protection")
+mod:add_text("kerillian_maidenguard_passive_dodge_wraith_desc", "After taking damage, Kerillian is able to travel through enemies for 3 seconds.")
+
+ProcFunctions["on_damage_taken_add_wraith_buff"] = function(owner_unit, buff, params)
+    local buff_extension = ScriptUnit.has_extension(owner_unit, "buff_system")
+    if buff_extension then
+        buff_extension:add_buff("kerillian_maidenguard_passive_dodge_wraith_active")
+    end
 end
 
---Add the new templates to the DamageProfile templates
---Setup proper linkin in NetworkLookup
-for key, _ in pairs(NewDamageProfileTemplates) do
-    i = #NetworkLookup.damage_profiles + 1
-    NetworkLookup.damage_profiles[i] = key
-    NetworkLookup.damage_profiles[key] = i
-end
---Merge the tables together
-table.merge_recursive(DamageProfileTemplates, NewDamageProfileTemplates)
---Do FS things
-for name, damage_profile in pairs(DamageProfileTemplates) do
-	if not damage_profile.targets then
-		damage_profile.targets = {}
-	end
+mod:add_buff_template("kerillian_maidenguard_passive_dodge_wraith", {
+    event = "on_damage_taken",
+    buff_func = "on_damage_taken_add_wraith_buff"
+})
 
-	fassert(damage_profile.default_target, "damage profile [\"%s\"] missing default_target", name)
-
-	if type(damage_profile.critical_strike) == "string" then
-		local template = PowerLevelTemplates[damage_profile.critical_strike]
-
-		fassert(template, "damage profile [\"%s\"] has no corresponding template defined in PowerLevelTemplates. Wanted template name is [\"%s\"] ", name, damage_profile.critical_strike)
-
-		damage_profile.critical_strike = template
-	end
-
-	if type(damage_profile.cleave_distribution) == "string" then
-		local template = PowerLevelTemplates[damage_profile.cleave_distribution]
-
-		fassert(template, "damage profile [\"%s\"] has no corresponding template defined in PowerLevelTemplates. Wanted template name is [\"%s\"] ", name, damage_profile.cleave_distribution)
-
-		damage_profile.cleave_distribution = template
-	end
-
-	if type(damage_profile.armor_modifier) == "string" then
-		local template = PowerLevelTemplates[damage_profile.armor_modifier]
-
-		fassert(template, "damage profile [\"%s\"] has no corresponding template defined in PowerLevelTemplates. Wanted template name is [\"%s\"] ", name, damage_profile.armor_modifier)
-
-		damage_profile.armor_modifier = template
-	end
-
-	if type(damage_profile.default_target) == "string" then
-		local template = PowerLevelTemplates[damage_profile.default_target]
-
-		fassert(template, "damage profile [\"%s\"] has no corresponding template defined in PowerLevelTemplates. Wanted template name is [\"%s\"] ", name, damage_profile.default_target)
-
-		damage_profile.default_target = template
-	end
-
-	if type(damage_profile.targets) == "string" then
-		local template = PowerLevelTemplates[damage_profile.targets]
-
-		fassert(template, "damage profile [\"%s\"] has no corresponding template defined in PowerLevelTemplates. Wanted template name is [\"%s\"] ", name, damage_profile.targets)
-
-		damage_profile.targets = template
-	end
-end
-
-local no_damage_templates = {}
-
-for name, damage_profile in pairs(DamageProfileTemplates) do
-	local no_damage_name = name .. "_no_damage"
-
-	if not DamageProfileTemplates[no_damage_name] then
-		local no_damage_template = table.clone(damage_profile)
-
-		if no_damage_template.targets then
-			for _, target in ipairs(no_damage_template.targets) do
-				if target.power_distribution then
-					target.power_distribution.attack = 0
-				end
-			end
-		end
-
-		if no_damage_template.default_target.power_distribution then
-			no_damage_template.default_target.power_distribution.attack = 0
-		end
-
-		no_damage_templates[no_damage_name] = no_damage_template
-	end
-end
-
-DamageProfileTemplates = table.merge(DamageProfileTemplates, no_damage_templates)
-
-local MeleeBuffTypes = MeleeBuffTypes or {
-	MELEE_1H = true,
-	MELEE_2H = true
-}
-local RangedBuffTypes = RangedBuffTypes or {
-	RANGED_ABILITY = true,
-	RANGED = true
-}
-local WEAPON_DAMAGE_UNIT_LENGTH_EXTENT = 1.919366
-local TAP_ATTACK_BASE_RANGE_OFFSET = 0.6
-local HOLD_ATTACK_BASE_RANGE_OFFSET = 0.65
-
-for item_template_name, item_template in pairs(Weapons) do
-	item_template.name = item_template_name
-	item_template.crosshair_style = item_template.crosshair_style or "dot"
-	local attack_meta_data = item_template.attack_meta_data
-	local tap_attack_meta_data = attack_meta_data and attack_meta_data.tap_attack
-	local hold_attack_meta_data = attack_meta_data and attack_meta_data.hold_attack
-	local set_default_tap_attack_range = tap_attack_meta_data and tap_attack_meta_data.max_range == nil
-	local set_default_hold_attack_range = hold_attack_meta_data and hold_attack_meta_data.max_range == nil
-
-	if RangedBuffTypes[item_template.buff_type] and attack_meta_data then
-		attack_meta_data.effective_against = attack_meta_data.effective_against or 0
-		attack_meta_data.effective_against_charged = attack_meta_data.effective_against_charged or 0
-		attack_meta_data.effective_against_combined = bit.bor(attack_meta_data.effective_against, attack_meta_data.effective_against_charged)
-	end
-
-	if MeleeBuffTypes[item_template.buff_type] then
-		fassert(attack_meta_data, "Missing attack metadata for weapon %s", item_template_name)
-		fassert(tap_attack_meta_data, "Missing tap_attack metadata for weapon %s", item_template_name)
-		fassert(hold_attack_meta_data, "Missing hold_attack metadata for weapon %s", item_template_name)
-		fassert(tap_attack_meta_data.arc, "Missing arc parameter in tap_attack metadata for weapon %s", item_template_name)
-		fassert(hold_attack_meta_data.arc, "Missing arc parameter in hold_attack metadata for weapon %s", item_template_name)
-	end
-
-	local actions = item_template.actions
-
-	for action_name, sub_actions in pairs(actions) do
-		for sub_action_name, sub_action_data in pairs(sub_actions) do
-			local lookup_data = {
-				item_template_name = item_template_name,
-				action_name = action_name,
-				sub_action_name = sub_action_name
-			}
-			sub_action_data.lookup_data = lookup_data
-			local action_kind = sub_action_data.kind
-			local action_assert_func = ActionAssertFuncs[action_kind]
-
-			if action_assert_func then
-				action_assert_func(item_template_name, action_name, sub_action_name, sub_action_data)
-			end
-
-			if action_name == "action_one" then
-				local range_mod = sub_action_data.range_mod or 1
-
-				if set_default_tap_attack_range and string.find(sub_action_name, "light_attack") then
-					local current_attack_range = tap_attack_meta_data.max_range or math.huge
-					local tap_attack_range = TAP_ATTACK_BASE_RANGE_OFFSET + WEAPON_DAMAGE_UNIT_LENGTH_EXTENT * range_mod
-					tap_attack_meta_data.max_range = math.min(current_attack_range, tap_attack_range)
-				elseif set_default_hold_attack_range and string.find(sub_action_name, "heavy_attack") then
-					local current_attack_range = hold_attack_meta_data.max_range or math.huge
-					local hold_attack_range = HOLD_ATTACK_BASE_RANGE_OFFSET + WEAPON_DAMAGE_UNIT_LENGTH_EXTENT * range_mod
-					hold_attack_meta_data.max_range = math.min(current_attack_range, hold_attack_range)
-				end
-			end
-
-			local impact_data = sub_action_data.impact_data
-
-			if impact_data then
-				local pickup_settings = impact_data.pickup_settings
-
-				if pickup_settings then
-					local link_hit_zones = pickup_settings.link_hit_zones
-
-					if link_hit_zones then
-						for i = 1, #link_hit_zones, 1 do
-							local hit_zone_name = link_hit_zones[i]
-							link_hit_zones[hit_zone_name] = true
-						end
-					end
-				end
-			end
-		end
-	end
-end
+mod:add_buff_template("kerillian_maidenguard_passive_dodge_wraith_active", {
+    name = "kerillian_maidenguard_passive_dodge_wraith_active",
+    icon = "kerillian_maidenguard_passive_noclip_dodge",
+    duration = 3,
+	max_stacks = 1,
+    refresh_durations = true
+})
 
 ----	
 	if mod.is_on == false then
+		mod:dofile("scripts/mods/Tourney Balance Testing Testing/base/helper_functions")
 		mod:echo("João's Handmaiden Rework Loaded")
 	end
+	
 elseif option == 3 then
 -- Text Localization
 local _language_id = Application.user_setting("language_id")
