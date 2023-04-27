@@ -5,6 +5,46 @@ local option = mod.settings.mutually_exclusive_test_1
 if option == 2 then
 ----
 
+
+-- Text Localization
+local _language_id = Application.user_setting("language_id")
+local _localization_database = {}
+mod._quick_localize = function (self, text_id)
+    local mod_localization_table = _localization_database
+    if mod_localization_table then
+        local text_translations = mod_localization_table[text_id]
+        if text_translations then
+            return text_translations[_language_id] or text_translations["en"]
+        end
+    end
+end
+function mod.add_text(self, text_id, text)
+    if type(text) == "table" then
+        _localization_database[text_id] = text
+    else
+        _localization_database[text_id] = {
+            en = text
+        }
+    end
+end
+mod:hook("Localize", function(func, text_id)
+    local str = mod:_quick_localize(text_id)
+    if str then return str end
+    return func(text_id)
+end)
+NewDamageProfileTemplates = NewDamageProfileTemplates or {}
+function mod:add_buff(buff_name, buff_data)
+    local new_buff = {
+        buffs = {
+            merge({ name = buff_name }, buff_data),
+        },
+    }
+    BuffTemplates[buff_name] = new_buff
+    local index = #NetworkLookup.buff_templates + 1
+    NetworkLookup.buff_templates[index] = buff_name
+    NetworkLookup.buff_templates[buff_name] = index
+end
+
 -- Buff and Talent Functions
 local function merge(dst, src)
     for k, v in pairs(src) do
@@ -827,8 +867,7 @@ mod:add_buff_template("kerillian_maidenguard_passive_dodge_wraith_active", {
 
 ----	
 	if mod.is_on == false then
-		mod:dofile("scripts/mods/Tourney Balance Testing Testing/base/helper_functions")
-		mod:echo("João's Handmaiden Rework Loaded")
+		mod:echo("João's Handmaiden Rework Loaded v04-26-2023")
 	end
 	
 elseif option == 3 then

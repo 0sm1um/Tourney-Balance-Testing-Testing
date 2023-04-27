@@ -5,6 +5,8 @@ local settings_sync_package_id = "settings_sync"
 mod.settings = {}
 mod.is_on = false
 
+mod:dofile("scripts/mods/Tourney Balance Testing Testing/base/helper_functions")
+
 -- A series of functions for use in the activation command:
 function load_mod_settings()
  	mod.settings.test_1 = mod:get("test_1")
