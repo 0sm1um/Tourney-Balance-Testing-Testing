@@ -4,12 +4,12 @@ local mod = get_mod("Tourney Balance Testing Testing")
 
 mod:dofile("scripts/mods/Tourney Balance Testing Testing/base/helper_functions")
 
-mod:modify_talent_buff_template("dwarf_ranger", "bardin_ranger_passive", {
-	buff_func = "gs_bardin_ranger_scavenge_proc"
-})
 
 Weapons.bardin_survival_ale.actions.action_one.default.total_time = 0.05
 
+mod:modify_talent_buff_template("dwarf_ranger", "bardin_ranger_passive", {
+	buff_func = "gs_bardin_ranger_scavenge_proc"
+})
 mod:add_proc_function("gs_bardin_ranger_scavenge_proc", function (owner_unit, buff, params)
 	if not Managers.state.network.is_server then
 		return
@@ -45,7 +45,6 @@ mod:add_proc_function("gs_bardin_ranger_scavenge_proc", function (owner_unit, bu
 					else
 						pickup_system:buff_spawn_pickup("cooldown_reduction_potion", player_pos, raycast_down)
 					end
-					buff.potion_or_bomb_state = 0
 				end
 			else
 				pickup_system:buff_spawn_pickup("ammo_ranger", player_pos, raycast_down)
@@ -55,7 +54,6 @@ mod:add_proc_function("gs_bardin_ranger_scavenge_proc", function (owner_unit, bu
 			PRD_special_drop, buff.state  = PseudoRandomDistribution.flip_coin(buff.state, probability_of_item_drop) -- Do I drop an item?
 			if PRD_special_drop == true then
 				pickup_system:buff_spawn_pickup("bardin_survival_ale", player_pos + offset_position_1, raycast_down)
-				buff.state = 0
 			end
 			pickup_system:buff_spawn_pickup("ammo_ranger", player_pos + offset_position_2, raycast_down)
 		else -- If user is running ammo talent
