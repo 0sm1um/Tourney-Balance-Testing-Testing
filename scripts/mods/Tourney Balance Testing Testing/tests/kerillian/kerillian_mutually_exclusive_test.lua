@@ -1,6 +1,6 @@
 local mod = get_mod("Tourney Balance Testing Testing")
 
-local option = mod.settings.mutually_exclusive_test_1
+local option = mod.settings.mutually_exclusive_kerillian
 
 if option == 2 then
 ----
@@ -866,9 +866,8 @@ mod:add_buff_template("kerillian_maidenguard_passive_dodge_wraith_active", {
 })
 
 ----	
-	if mod.is_on == false then
-		mod:echo("João's Handmaiden Rework Loaded v04-26-2023")
-	end
+	mod:echo("João's Handmaiden Rework Loaded v04-26-2023")
+
 	
 elseif option == 3 then
 -- Text Localization
@@ -2443,7 +2442,6 @@ local index = #NetworkLookup.buff_templates + 1
 NetworkLookup.buff_templates[index] = "power_from_pain_buff_handmaiden_adjust"
 NetworkLookup.buff_templates["power_from_pain_buff_handmaiden_adjust"] = index
 	
-	if mod.is_on == false then
-		mod:echo("Janoti's Handmaiden Rework v1.0.1 enabled")
-	end
+	mod:echo("Janoti's Handmaiden Rework v1.0.1 enabled")
+
 end

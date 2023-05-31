@@ -1,0 +1,91 @@
+local mod = get_mod("Tourney Balance Testing Testing")
+
+if mod.settings.kruber_test_1 then
+
+	local challenge_settings = {
+		default = {
+			possible_challenges = {
+				{
+					reward = "markus_questing_knight_passive_power_level",
+					type = "kill_elites",
+					amount = {
+						1,
+						15,
+						15,
+						20,
+						20,
+						30,
+						30,
+						30
+					}
+				},
+				{
+					reward = "markus_questing_knight_passive_attack_speed",
+					type = "kill_specials",
+					amount = {
+						1,
+						10,
+						10,
+						15,
+						15,
+						20,
+						20,
+						20
+					}
+				},
+				{
+					reward = "markus_questing_knight_passive_cooldown_reduction",
+					type = "kill_monsters",
+					amount = {
+						1,
+						1,
+						1,
+						1,
+						1,
+						1,
+						1,
+						1
+					}
+				},
+				{
+					reward = "markus_questing_knight_passive_health_regen",
+					type = "find_grimoire",
+					amount = {
+						1,
+						1,
+						1,
+						1,
+						1,
+						1,
+						1,
+						1
+					},
+					condition = only_when_grims_allowed_and_there_from_the_start
+				},
+				{
+					reward = "markus_questing_knight_passive_damage_taken",
+					type = "find_tome",
+					amount = {
+						1,
+						1,
+						1,
+						1,
+						1,
+						1,
+						1,
+						1
+					},
+					condition = only_when_tomes_allowed_and_there_from_the_start
+				}
+			},
+
+	for _, dlc in pairs(DLCSettings) do
+		if dlc.questing_knight_challenges then
+			table.merge_recursive(challenge_settings, dlc.questing_knight_challenges)
+		end
+	end
+
+	
+
+	mod:echo("Grail Knight Strength Potion Quest Changed.")
+end

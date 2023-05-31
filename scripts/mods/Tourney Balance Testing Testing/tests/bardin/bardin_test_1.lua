@@ -62,6 +62,4 @@ mod:add_proc_function("gs_bardin_ranger_scavenge_proc", function (owner_unit, bu
 	end
 end)
 
-if mod.is_on == false then
-	mod:echo("Osmium's Psuedorandom Ranger Veteran Loaded")
-end
+mod:echo("Osmium's Psuedorandom Ranger Veteran Loaded")

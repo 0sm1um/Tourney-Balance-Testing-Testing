@@ -32,35 +32,17 @@ return {
 	prd_scav_tooltip = {
 		en = "Using PsuedoRandomDistribution to make Scav Drops more consistant."
 	},
-	slayer_monke = {
-		en = "Return to Monke"
-	},
-	slayer_monke_tooltip = {
-		en = "Osmium's reworked Slayer."
-	},
 	kruber = {
 		en = "Kruber"
 	},
 	kruber_tooltip = {
 		en = "Talent related changes for Kruber's careers."
 	},
-	gk_quests = {
-		en = "GK Strength Potion Quest Nerf"
-	},
-	gk_quests_tooltip = {
-		en = "Increases strength potion kill goal to 500 enemies."
-	},
 	saltzpyre = {
 		en = "Saltzpyre"
 	},
 	saltzpyre_tooltip = {
 		en = "Talent related changes for Saltzpyre's careers."
-	},
-	whc_crit = {
-		en = "WHC Crit Chance Reduction"
-	},
-	whc_crit_tooltip = {
-		en = "Reducing WHC's base crit chance by 5%%."
 	},
 	kerillian = {
 		en = "Kerillian"
@@ -74,18 +56,6 @@ return {
 	kerillian_bigwall_tooltip = {
 		en = "Adjustment of Sister of the Thorn's big wall."
 	},
-	HM_rework = {
-		en = "Handmaiden Reworks"
-	},
-	HM_rework_tooltip = {
-		en = "Different versions of Handmaiden provided by multipule modders."
-	},
-	joao_HM = {
-		en = "João's Handmaiden Rework"
-	},
-	janoti_HM = {
-		en = "Janoti's Handmaiden Rework"
-	},
 	sienna = {
 		en = "Sienna"
 	},
@@ -98,8 +68,20 @@ return {
 	misc_tooltip = {
 		en = "Changes which don't fit neatly into other categories."
 	},
+	HM_rework = {
+		en = "Handmaiden Reworks"
+	},
+	HM_rework_tooltip = {
+		en = "Different versions of Handmaiden provided by multipule modders."
+	},
+	joao_HM = {
+		en = "João's Handmaiden Rework"
+	},
+	janoti_HM = {
+		en = "Janoti's Handmaiden Rework"
+	},
 	hp = {
-		en = " %% HP"
+		en = " hp\%"
 	},
 	seconds = {
 		en = " s"
