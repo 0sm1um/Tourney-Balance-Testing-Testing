@@ -74,6 +74,18 @@ return {
 	kerillian_bigwall_tooltip = {
 		en = "Adjustment of Sister of the Thorn's big wall."
 	},
+	kerillian_bonded_spirit = {
+		en = "Bonded Spirit Setback"
+	},
+	kerillian_bonded_spirit_tooltip = {
+		en = "Adjustment of Sister of the Thorn's Bonded Spirit Talent Setback amount."
+	},
+	kerillian_bonded_spirit_cdr = {
+		en = "Bonded Spirit Passive Cooldown Reduction"
+	},
+	kerillian_bonded_spirit_cdr_tooltip = {
+		en = "Adjustment of Sister of the Thorn's Bonded Spirit cooldown reduction of passive wall."
+	},
 	HM_rework = {
 		en = "Handmaiden Reworks"
 	},
@@ -100,6 +112,9 @@ return {
 	},
 	hp = {
 		en = " %% HP"
+	},
+	percent = {
+		en = " %% "
 	},
 	seconds = {
 		en = " s"

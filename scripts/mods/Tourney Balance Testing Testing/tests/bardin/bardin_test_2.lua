@@ -1,5 +1,8 @@
 local mod = get_mod("Tourney Balance Testing Testing")
 
+local num_stacks = 4
+local num_high_tally_stacks = 6
+
 -- Thousand Cuts
 mod:modify_talent("dr_slayer", 2, 1, {
 	description = "bardin_slayer_attack_speed_on_double_one_handed_weapons_desc",
@@ -14,7 +17,7 @@ mod:modify_talent("dr_slayer", 2, 1, {
 	}
 })
 --mod:add_text("bardin_slayer_attack_speed_on_double_one_handed_weapons", "A Thousand Cuts")
---mod:add_text("bardin_slayer_attack_speed_on_double_one_handed_weapons_desc", "Wielding one-handed weapons in both slots increases attack speed by 10%%")
+--mod:add_text("bardin_slayer_attack_speed_on_double_one_handed_weapons_desc", "Wielding one-handed weapons in both slots increases attack speed by 10%")
 
 
 -- Skull Splitter
@@ -27,14 +30,19 @@ mod:add_talent("dr_slayer", 2, 2, "bardin_slayer_power_on_double_two_handed_weap
 	description_values = {
         {
             value_type = "percent",
-            value = 0.15
+            value = 0.10
         }
     },
 	buffs = {
 		"bardin_slayer_power_on_double_two_handed_weapons"
 	}
 })
-mod:add_text("bardin_slayer_power_on_double_two_handed_weapons_desc", "Wielding two-handed weapons in both slots increases power by 15%%.")
+
+mod:modify_talent_buff_template("dwarf_ranger", "bardin_slayer_power_on_double_two_handed_weapons", {
+	multiplier = 0.10
+})
+
+mod:add_text("bardin_slayer_power_on_double_two_handed_weapons_desc", "Wielding two-handed weapons in both slots increases power by 10%%.")
 mod:add_text("bardin_slayer_power_on_double_two_handed_weapons", "Skull Splitter")
 
 -- Hack and Slash
@@ -73,9 +81,10 @@ mod:add_talent("dr_slayer", 4, 2, "gs_bardin_slayer_passive_increased_max_stacks
 	},
 	buffs = {}
 })
+mod:add_text("bardin_slayer_passive_increased_max_stacks_desc", "Increases maximum stacks of Trophy Hunter by 2.")
 
 mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_passive_increased_max_stacks", {
-	max_stacks = 5,
+	max_stacks = num_high_tally_stacks,
 	multiplier = 0.05,
 	duration = 2,
 	refresh_durations = true,
@@ -98,7 +107,7 @@ mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_passive_movement_
                           
 -- High Tally extra buffs
 mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_passive_dodge_speed_extra", {
-	max_stacks = 5,
+	max_stacks = num_high_tally_stacks,
 	multiplier = 1.05,
 	duration = 2,
 	remove_buff_func = "remove_movement_buff",
@@ -114,10 +123,10 @@ mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_passive_dodge_spe
 mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_passive_cooldown_reduction", {
 	icon = "bardin_slayer_passive_cooldown_reduction_on_max_stacks",
 	stat_buff = "cooldown_regen",
-	max_stacks = 3,
+	max_stacks = num_stacks,
 	refresh_durations = true,
 	duration = 2,
-	multiplier = 0.33
+	multiplier = 0.5
 })
 --[[
 mod:modify_talent("dr_slayer", 4, 3, {
@@ -136,7 +145,7 @@ mod:add_talent("dr_slayer", 4, 3, "bardin_slayer_passive_cooldown_reduction_on_m
 		"gs_bardin_slayer_passive_cooldown_reduction",
 }
 })
-mod:add_text("os_bardin_slayer_passive_cooldown_reduction_on_max_stacks_desc", "Each stack of Trophy Hunter increases cooldown regeneration by 33%%.")
+mod:add_text("os_bardin_slayer_passive_cooldown_reduction_on_max_stacks_desc", "Each stack of Trophy Hunter increases cooldown regeneration by 50%%.")
 mod:add_text("bardin_slayer_passive_cooldown_reduction_on_max_stacks_name", "Adreneline Surge")
 
 
@@ -158,7 +167,7 @@ mod:modify_talent("dr_slayer", 5, 2, {
 
 -- Barge
 mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_passive_dodge_speed", {
-	max_stacks = 3,
+	max_stacks = 1,
 	multiplier = 1.05,
 	duration = 2,
 	remove_buff_func = "remove_movement_buff",
@@ -212,15 +221,15 @@ mod:add_text("rebaltourn_career_passive_desc_dr_2d_2", "Reduces damage taken by 
 -- Trophy Hunter Power Buff
 mod:modify_talent_buff_template("dwarf_ranger", "bardin_slayer_passive_stacking_damage_buff_on_hit", {
 	buff_func = "gs_add_bardin_slayer_passive_buff",
+	max_stacks = num_stacks
 })
 
 mod:modify_talent_buff_template("dwarf_ranger", "bardin_slayer_passive_stacking_damage_buff", {
 	stat_buff = "power_level",
 	multiplier = 0.05,
-	duration = 2
+	max_stacks = num_stacks,
+	duration = 4
 })
-
-mod:add_text("bardin_slayer_passive_stacking_crit_buff_desc", "Hitting an enemy grants a stacking power buff. Increased power by 5%%, stacking 3 times. Buff lasts 2 seconds.")
 
 mod:add_proc_function("gs_add_bardin_slayer_passive_buff", function(owner_unit, buff, params)
 	if not Managers.state.network.is_server then
@@ -241,8 +250,6 @@ mod:add_proc_function("gs_add_bardin_slayer_passive_buff", function(owner_unit, 
 
 		if talent_extension:has_talent("bardin_slayer_passive_movement_speed", "dwarf_ranger", true) and talent_extension:has_talent("gs_bardin_slayer_passive_increased_max_stacks", "dwarf_ranger", true) == false then
 			buff_system:add_buff(owner_unit, "bardin_slayer_passive_movement_speed", owner_unit, false)
-			buff_system:add_buff(owner_unit, "gs_bardin_slayer_passive_dodge_range", owner_unit, false)
-			buff_system:add_buff(owner_unit, "gs_bardin_slayer_passive_dodge_speed", owner_unit, false)
 		end
 
 		if talent_extension:has_talent("bardin_slayer_passive_cooldown_reduction_on_max_stacks", "dwarf_ranger", true) and talent_extension:has_talent("gs_bardin_slayer_passive_increased_max_stacks", "dwarf_ranger", true) == false then
@@ -263,9 +270,9 @@ PassiveAbilitySettings.dr_2.perks = {
 		description = "career_passive_desc_dr_2c"
 	}
 }
-mod:add_text("career_passive_desc_dr_2a_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 3 times. Buff lasts 2 seconds.")
+mod:add_text("career_passive_desc_dr_2a_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 4 times. Buff lasts 2 seconds.")
 mod:add_text("career_passive_name_dr_2b", "Trophy Hunter")
-mod:add_text("career_passive_desc_dr_2b_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 3 times. Buff lasts 2 seconds.")
+mod:add_text("career_passive_desc_dr_2b_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 4 times. Buff lasts 2 seconds.")
 
 
 mod:echo("Osmium's Return 2 Monke Slayer Rework Loaded")

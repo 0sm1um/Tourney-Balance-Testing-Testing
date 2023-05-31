@@ -93,6 +93,28 @@ menu.options.widgets = {
 				tooltip         = "kerillian_bigwall_tooltip",
 				default_value   = false,
 			},
+			--[[
+			{
+				setting_id      = "kerillian_test_2",
+				type            = "numeric",
+				title		    = "kerillian_bonded_spirit",
+				tooltip         = "kerillian_bonded_spirit_tooltip",
+				default_value   = 2,
+				range = {2, 20},
+				unit_text = "seconds",
+				decimals_number = 1
+			},
+			{
+				setting_id      = "kerillian_test_3",
+				type            = "numeric",
+				title		    = "kerillian_bonded_spirit_cdr",
+				tooltip         = "kerillian_bonded_spirit_cdr_tooltip",
+				default_value   = 0.5,
+				range = {0.1, 0.9},
+				unit_text = "percent",
+				decimals_number = 1
+			},
+			--]]
 			{
 				setting_id = "mutually_exclusive_kerillian",
 				type = "dropdown",
