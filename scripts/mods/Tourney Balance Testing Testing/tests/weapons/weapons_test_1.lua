@@ -500,7 +500,6 @@ if mod.settings.weapons_test_1 then
 		}
 	}
 
-
 	-- Cog Hammer
 
 	NewDamageProfileTemplates.light_cog_hammer_os = {
@@ -1465,7 +1464,7 @@ if mod.settings.weapons_test_1 then
 		}
 	}
 
-	NewDamageProfileTemplates.heavy_dual_hammers_os  = {
+	NewDamageProfileTemplates.heavy_1_dual_hammers_os  = {
 		cleave_distribution = {
 		  impact = 0.075,
 		  attack = 0.075
@@ -1542,6 +1541,99 @@ if mod.settings.weapons_test_1 then
 		  boost_curve_type = "smiter_curve"
 		}
 	}
+
+	NewDamageProfileTemplates.heavy_2_3_dual_hammers_os = {
+		targets = {
+		  {
+			boost_curve_coefficient_headshot = 1,
+			power_distribution = {
+			  impact = 0.175,
+			  attack = 0.254
+			},
+			armor_modifier = {
+			  impact = {
+				1,
+				1,
+				0.5,
+				1,
+				0.75
+			  },
+			  attack = {
+				1,
+				0.5,
+				1,
+				1,
+				0.75
+			  }
+			},
+			boost_curve_type = "tank_curve",
+			attack_template = "blunt_tank"
+		  },
+		  {
+			attack_template = "blunt_tank",
+			power_distribution = {
+			  impact = 0.15,
+			  attack = 0.113
+			},
+			boost_curve_type = "tank_curve"
+		  },
+		  {
+			attack_template = "light_blunt_tank",
+			power_distribution = {
+			  impact = 0.1,
+			  attack = 0.085
+			},
+			boost_curve_type = "tank_curve"
+		  }
+		},
+		armor_modifier = {
+		  impact = {
+			1,
+			1,
+			0.5,
+			1,
+			0.75
+		  },
+		  attack = {
+			1,
+			0.35,
+			1,
+			1,
+			0.75
+		  }
+		},
+		default_target = {
+		  attack_template = "light_blunt_tank",
+		  power_distribution = {
+			impact = 0.05,
+			attack = 0.05
+		  },
+		  boost_curve_type = "tank_curve"
+		},
+		cleave_distribution = {
+		  impact = 0.8,
+		  attack = 0.3
+		},
+		charge_value = "heavy_attack",
+		critical_strike = {
+		  attack_armor_power_modifer = {
+			1,
+			0.5,
+			1,
+			1,
+			1
+		  },
+		  impact_armor_power_modifer = {
+			1,
+			1,
+			0.5,
+			1,
+			1
+		  }
+		},
+		stagger_duration_modifier = 1.5
+	  }
+
 	NewDamageProfileTemplates.push_attack_dual_hammers_os = {
 		default_target = {
 		  boost_curve_coefficient_headshot = 2,
@@ -1618,16 +1710,18 @@ if mod.settings.weapons_test_1 then
 		  impact = 0.075,
 		  attack = 0.075
 		}
-	  }
-
+	}
+	-------------
 	--Dual Axes--
+	-------------
+
 	-- Lights
 	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_left.damage_profile = "light_dual_axes_os"
 	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_right.damage_profile = "light_dual_axes_os"
     Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_back_left.damage_profile = "light_dual_axes_os"
     Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_back_right.damage_profile =  "light_dual_axes_os"
 
-	--Heavies
+	-- Heavies
 	Weapons.dual_wield_axes_template_1.actions.action_one.heavy_attack.anim_time_scale = 0.925  --1.035
 	Weapons.dual_wield_axes_template_1.actions.action_one.heavy_attack_2.anim_time_scale = 1.1 --1.035
 	Weapons.dual_wield_axes_template_1.actions.action_one.heavy_attack_3.additional_critical_strike_chance = 0.2 --0
@@ -1641,20 +1735,102 @@ if mod.settings.weapons_test_1 then
 	-- Push Attack
 	Weapons.dual_wield_axes_template_1.actions.action_one.push.damage_profile_inner = "light_push"
 	Weapons.dual_wield_axes_template_1.actions.action_one.push.fatigue_cost = "action_stun_push"
-	Weapons.dual_wield_axes_template_1.actions.action_one.push.light_attack_bopp.damage_profile_left = "push_attack_dual_axes_os"
-	Weapons.dual_wield_axes_template_1.actions.action_one.push.light_attack_bopp.damage_profile_right = "push_attack_dual_axes_os"
+	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_bopp.damage_profile_left = "push_attack_dual_axes_os"
+	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_bopp.damage_profile_right = "push_attack_dual_axes_os"
 
-	-- Great Axe
-
-	-- Cog Hammer
-
-	-- Great Hammer
-
-	-- 1h Axe
-
-	-- 1h Hammer
+	-------------
+	--Great Axe--
+	-------------
 	
-	-- Dual Hammers
+	-- Lights
+	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_left.damage_profile = "light_great_axe_os"
+	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_right.damage_profile = "light_great_axe_os"
+	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_up.damage_profile = "light_great_axe_os"
+	-- Heavies
+	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_right.damage_profile = "heavy_great_axe_os"
+	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_left.damage_profile = "heavy_great_axe_os"
+	-- Push Attack
+	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_bopp.damage_profile = "push_attack_great_axe_os"
+
+	--------------
+	--Cog Hammer--
+	--------------
+
+	-- Lights
+	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_left.damage_profile = "light_cog_hammer_os"
+	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_left_up.damage_profile = "light_cog_hammer_os"
+	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_right.damage_profile = "light_cog_hammer_os"
+	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_last.damage_profile = "light_cog_hammer_os"
+	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_up_right_last.damage_profile = "light_cog_hammer_os"
+	--Heavies
+	Weapons.two_handed_cog_hammers_template_1.actions.action_one.heavy_attack_right.damage_profile = "heavy_cog_hammer_os"
+	Weapons.two_handed_cog_hammers_template_1.actions.action_one.heavy_attack_left.damage_profile = "heavy_cog_hammer_os"
+	-- Push Attack
+	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_bopp.damage_profile = "light_cog_hammer_os"
+
+	----------------
+	--Great Hammer--
+	----------------
+
+	Weapons.two_handed_hammers_template_1.actions.action_one.light_attack_left.damage_profile = "light_2h_hammer_os"
+	Weapons.two_handed_hammers_template_1.actions.action_one.light_attack_right.damage_profile = "light_2h_hammer_os"
+	Weapons.two_handed_hammers_template_1.actions.action_one.light_attack_left_up.damage_profile = "light_2h_hammer_os"
+	--Heavies
+	Weapons.two_handed_hammers_template_1.actions.action_one.heavy_attack_right.damage_profile = "heavy_2h_hammer_os"
+	Weapons.two_handed_hammers_template_1.actions.action_one.heavy_attack_left.damage_profile = "heavy_2h_hammer_os"
+	-- Push Attack
+	Weapons.two_handed_hammers_template_1.actions.action_one.light_attack_push_left_up.damage_profile = "heavy_2h_hammer_os"
+
+	----------
+	--1h Axe--
+	----------
+
+	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_left.damage_profile = "light_1h_axe_os"
+	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_right.damage_profile = "light_1h_axe_os"
+    Weapons.one_hand_axe_template_1.actions.action_one.light_attack_back_left.damage_profile = "light_1h_axe_os"
+    Weapons.one_hand_axe_template_1.actions.action_one.light_attack_back_right.damage_profile =  "light_1h_axe_os"
+
+	-- Heavies
+	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack.damage_profile = "heavy_attack_1h_axe_os"
+	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack_2.damage_profile = "heavy_attack_1h_axe_os"
+
+	-- Push Attack
+	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_bopp.damage_profile = "push_attack_1h_axe_os"
+
+	-------------
+	--1h Hammer--
+	-------------
+	Weapons.one_handed_hammer_template_1.actions.action_one.light_attack_left.damage_profile = "lights_1_2_1h_hammer_os"
+	Weapons.one_handed_hammer_template_1.actions.action_one.light_attack_right.damage_profile = "lights_1_2_1h_hammer_os"
+    Weapons.one_handed_hammer_template_1.actions.action_one.light_attack_down.damage_profile = "lights_3_4_1h_hammer_os"
+    Weapons.one_handed_hammer_template_1.actions.action_one.light_attack_last.damage_profile =  "lights_3_4_1h_hammer_os"
+
+	-- Heavies
+	Weapons.one_handed_hammer_template_1.actions.action_one.heavy_attack.damage_profile = "heavy_1h_hammer_os"
+	Weapons.one_handed_hammer_template_1.actions.action_one.heavy_attack_2.damage_profile = "heavy_1h_hammer_os"
+
+	-- Push Attack
+	Weapons.one_handed_hammer_template_1.actions.action_one.light_attack_bopp.damage_profile = "push_attack_1h_hammer_os"
+
+	-----------------
+	--Dual Hammers--
+	-----------------
+	Weapons.dual_wield_hammers_template.actions.action_one.light_attack_left.damage_profile = "light_dual_hammers_os"
+	Weapons.dual_wield_hammers_template.actions.action_one.light_attack_down.damage_profile = "light_dual_hammers_os"
+    Weapons.dual_wield_hammers_template.actions.action_one.light_attack_left_diagonal.damage_profile = "light_dual_hammers_os"
+    Weapons.dual_wield_hammers_template.actions.action_one.light_attack_right_uppercut.damage_profile =  "light_dual_hammers_os"
+
+	-- Heavies
+	Weapons.dual_wield_hammers_template.actions.action_one.heavy_attack.damage_profile_left = "heavy_1_dual_hammers_os"
+	Weapons.dual_wield_hammers_template.actions.action_one.heavy_attack.damage_profile_right = "heavy_1_dual_hammers_os"
+	Weapons.dual_wield_hammers_template.actions.action_one.heavy_attack_2.damage_profile_right = "heavy_2_3_dual_hammers_os"
+	Weapons.dual_wield_hammers_template.actions.action_one.heavy_attack_2.damage_profile_left = "heavy_2_3_dual_hammers_os"
+	Weapons.dual_wield_hammers_template.actions.action_one.heavy_attack_3.damage_profile_left = "heavy_2_3_dual_hammers_os"
+	Weapons.dual_wield_hammers_template.actions.action_one.heavy_attack_3.damage_profile_right = "heavy_2_3_dual_hammers_os"
+
+	-- Push Attack
+	Weapons.dual_wield_hammers_template.actions.action_one.light_attack_bopp.damage_profile_left = "push_attack_dual_hammers_os"
+	Weapons.dual_wield_hammers_template.actions.action_one.light_attack_bopp.damage_profile_right = "push_attack_dual_hammers_os"
 
 	mod.update_weapons()
 
