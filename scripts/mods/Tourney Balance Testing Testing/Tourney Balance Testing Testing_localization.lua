@@ -14,8 +14,11 @@ return {
 	weapons_tooltip = {
 		en = "Changes to weapon balance."
 	},
-	deepwood_vent_damage = {
-		en = "Deepwood Staff Vent Damage"
+	big_bardin_rebalance = {
+		en = "Big Bardin Rebalance"
+	},
+	big_bardin_rebalance_tooltip = {
+		en = "Tweaks to many of Bardin's weapons"
 	},
 	deepwood_vent_damage_tooltip = {
 		en = "Adjustment to the damage which SotT staff inflicts while venting."
@@ -27,10 +30,10 @@ return {
 		en = "Talent related changes for Bardin's careers."
 	},
 	prd_scav = {
-		en = "PRD Based Scavenger"
+		en = "PRD Based Scavenger Nerf"
 	},
 	prd_scav_tooltip = {
-		en = "Using PsuedoRandomDistribution to make Scav Drops more consistant."
+		en = "Using PsuedoRandomDistribution to make Scav Drops more consistant Droprate changed to 10%%."
 	},
 	slayer_monke = {
 		en = "Return to Monke"

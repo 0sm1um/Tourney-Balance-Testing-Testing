@@ -1,7 +1,14 @@
 local mod = get_mod("Tourney Balance Testing Testing")
 
-local num_stacks = 4
-local num_high_tally_stacks = 6
+--[[
+	local num_stacks = 3
+	local num_high_tally_stacks = 5
+	local skull_splitter_buff = 0.15
+--]]
+	local num_stacks = 4
+	local num_high_tally_stacks = 6
+	local skull_splitter_buff = 0.10
+
 
 -- Thousand Cuts
 mod:modify_talent("dr_slayer", 2, 1, {
@@ -30,7 +37,7 @@ mod:add_talent("dr_slayer", 2, 2, "bardin_slayer_power_on_double_two_handed_weap
 	description_values = {
         {
             value_type = "percent",
-            value = 0.10
+            value = skull_splitter_buff
         }
     },
 	buffs = {
@@ -228,7 +235,7 @@ mod:modify_talent_buff_template("dwarf_ranger", "bardin_slayer_passive_stacking_
 	stat_buff = "power_level",
 	multiplier = 0.05,
 	max_stacks = num_stacks,
-	duration = 4
+	duration = 2
 })
 
 mod:add_proc_function("gs_add_bardin_slayer_passive_buff", function(owner_unit, buff, params)
@@ -273,6 +280,5 @@ PassiveAbilitySettings.dr_2.perks = {
 mod:add_text("career_passive_desc_dr_2a_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 4 times. Buff lasts 2 seconds.")
 mod:add_text("career_passive_name_dr_2b", "Trophy Hunter")
 mod:add_text("career_passive_desc_dr_2b_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 4 times. Buff lasts 2 seconds.")
-
 
 mod:echo("Osmium's Return 2 Monke Slayer Rework Loaded")

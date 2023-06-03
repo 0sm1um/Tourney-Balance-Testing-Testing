@@ -11,19 +11,16 @@ menu.options.widgets = {
 	--[[
 	{
 		setting_id    = "weapons",
-		type        = "group",
+		type          = "group",
 		title		  = "weapons",
 		tooltip       = "weapons_tooltip",
 		sub_widgets = {
 			{
-				setting_id      = "weapon_test_1",
-				type            = "numeric",
-				title		  = "deepwood_vent_damage",
-				tooltip       = "deepwood_vent_damage_tooltip",
-				default_value   = 0.4,
-				range           = {0.1, 4},
-				unit_text       = "hp",
-				decimals_number = 1
+				setting_id      = "weapons_test_1",
+				type            = "checkbox",
+				title		    = "big_bardin_rebalance",
+				tooltip         = "big_bardin_rebalance_tooltip",
+				default_value   = false
 			},
 		},
 	},

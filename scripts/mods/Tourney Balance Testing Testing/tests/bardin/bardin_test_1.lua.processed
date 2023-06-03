@@ -1,6 +1,37 @@
 local mod = get_mod("Tourney Balance Testing Testing")
 
-Weapons.bardin_survival_ale.actions.action_one.default.total_time = 0.1
+Weapons.bardin_survival_ale.actions.action_one.default.total_time = 0.05
+
+Pickups.ammo.ammo_ranger_ales = {
+	only_once = true,
+	ranger_ammo = true,
+	individual_pickup = false,
+	type = "ammo",
+	spawn_weighting = 1e-06,
+	refill_percentage = 1,
+	pickup_sound_event = "pickup_ammo",
+	debug_pickup_category = "consumables",
+	unit_name = "units/weapons/player/pup_ammo_box/pup_ammo_box_limited",
+	unit_template_name = "pickup_unit",
+	consumable_item = true,
+	local_pickup_sound = true,
+	hud_description = "interaction_ranger_ammunition",
+	can_interact_func = function (interactor_unit, interactable_unit, data)
+		local inventory_extension = ScriptUnit.has_extension(interactor_unit, "inventory_system")
+
+		if not inventory_extension then
+			return false
+		end
+
+		local has_ammo_consuming_weapon = inventory_extension:has_ammo_consuming_weapon_equipped()
+		local is_throwing_axe = inventory_extension:has_ammo_consuming_weapon_equipped("throwing_axe")
+		local infinite_ammo = inventory_extension:has_infinite_ammo()
+
+		return has_ammo_consuming_weapon and not is_throwing_axe and not infinite_ammo
+	end
+}
+
+AllPickups[ammo_ranger_ales] = Pickups.ammo.ammo_ranger_ales
 
 mod:modify_talent_buff_template("dwarf_ranger", "bardin_ranger_passive", {
 	buff_func = "gs_bardin_ranger_scavenge_proc"
@@ -47,10 +78,10 @@ mod:add_proc_function("gs_bardin_ranger_scavenge_proc", function (owner_unit, bu
 		elseif talent_extension:has_talent("bardin_ranger_passive_ale") then
 			local probability_of_item_drop = 0.5
 			PRD_special_drop, buff.state  = PseudoRandomDistribution.flip_coin(buff.state, probability_of_item_drop) -- Do I drop an item?
-			if PRD_special_drop then
+			if PRD_special_drop == true then
 				pickup_system:buff_spawn_pickup("bardin_survival_ales", player_pos + offset_position_1, raycast_down)
 			end
-			pickup_system:buff_spawn_pickup("ammo_ranger", player_pos + offset_position_2, raycast_down)
+			pickup_system:buff_spawn_pickup("ammo_ranger_ales", player_pos + offset_position_2, raycast_down)sa
 		else -- If user is running ammo talent
 			pickup_system:buff_spawn_pickup("ammo_ranger_improved", player_pos, raycast_down)
 		end

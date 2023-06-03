@@ -9,7 +9,7 @@ mod:dofile("scripts/mods/Tourney Balance Testing Testing/base/helper_functions")
 
 -- A series of functions for use in the activation command:
 mod.load_settings = function ()
-	--mod.settings.weapon_test_1 = mod:get("weapon_test_1")
+	--mod.settings.weapons_test_1 = mod:get("weapons_test_1")
  	mod.settings.bardin_test_1 = mod:get("bardin_test_1")
 	mod.settings.bardin_test_2 = mod:get("bardin_test_2")
 	mod.settings.kruber_test_1 = mod:get("kruber_test_1")
@@ -32,8 +32,8 @@ end
 
 mod.apply_settings = function ()
 	--[[
-	if mod.settings.weapon_test_1 ~= 0.4 then
-		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/weapons/weapon_test_1")
+	if mod.settings.weapons_test_1 then
+		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/weapons/weapons_test_1")
 	end
 	--]]
 	if mod.settings.bardin_test_1 then
@@ -56,10 +56,10 @@ mod.apply_settings = function ()
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_test_2")
 	end
 	if mod.settings.kerillian_test_2 ~= 0.5 then
-		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_test_3")
+		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/weapons/weapons_test_3")
 	end
 	--]]
-	if mod.settings.mutually_exclusive_kerillian ~= 1 then
+	if mod.settings.mutually_exclusive_kerillian then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_mutually_exclusive_test")
 	--end
 	--if mod.settings.mutually_exclusive_test_2 ~= 1 then
