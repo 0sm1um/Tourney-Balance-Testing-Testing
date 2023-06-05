@@ -18,7 +18,7 @@ return {
 		en = "Big Bardin Rebalance"
 	},
 	big_bardin_rebalance_tooltip = {
-		en = "Tweaks to many of Bardin's weapons"
+		en = "Tweaks to many of Bardin's weapons, specifically with the Return to Monke rework in mind."
 	},
 	deepwood_vent_damage_tooltip = {
 		en = "Adjustment to the damage which SotT staff inflicts while venting."
@@ -39,7 +39,7 @@ return {
 		en = "Return to Monke"
 	},
 	slayer_monke_tooltip = {
-		en = "Osmium's reworked Slayer."
+		en = "Osmium's reworked Slayer. Intended to be run with the BBR weapon rebalance."
 	},
 	kruber = {
 		en = "Kruber"

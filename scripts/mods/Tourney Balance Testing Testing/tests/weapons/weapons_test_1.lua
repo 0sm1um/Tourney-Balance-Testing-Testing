@@ -1758,7 +1758,6 @@ if mod.settings.weapons_test_1 then
 
 	-- Lights
 	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_left.damage_profile = "light_cog_hammer_os"
-	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_left_up.damage_profile = "light_cog_hammer_os"
 	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_right.damage_profile = "light_cog_hammer_os"
 	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_last.damage_profile = "light_cog_hammer_os"
 	Weapons.two_handed_cog_hammers_template_1.actions.action_one.light_attack_up_right_last.damage_profile = "light_cog_hammer_os"
@@ -1787,12 +1786,11 @@ if mod.settings.weapons_test_1 then
 
 	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_left.damage_profile = "light_1h_axe_os"
 	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_right.damage_profile = "light_1h_axe_os"
-    Weapons.one_hand_axe_template_1.actions.action_one.light_attack_back_left.damage_profile = "light_1h_axe_os"
-    Weapons.one_hand_axe_template_1.actions.action_one.light_attack_back_right.damage_profile =  "light_1h_axe_os"
+    Weapons.one_hand_axe_template_1.actions.action_one.light_attack_last.damage_profile = "light_1h_axe_os"
 
 	-- Heavies
-	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack.damage_profile = "heavy_attack_1h_axe_os"
-	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack_2.damage_profile = "heavy_attack_1h_axe_os"
+	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack_left.damage_profile = "heavy_1h_axe_os"
+	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack_right.damage_profile = "heavy_1h_axe_os"
 
 	-- Push Attack
 	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_bopp.damage_profile = "push_attack_1h_axe_os"
@@ -1806,8 +1804,8 @@ if mod.settings.weapons_test_1 then
     Weapons.one_handed_hammer_template_1.actions.action_one.light_attack_last.damage_profile =  "lights_3_4_1h_hammer_os"
 
 	-- Heavies
-	Weapons.one_handed_hammer_template_1.actions.action_one.heavy_attack.damage_profile = "heavy_1h_hammer_os"
-	Weapons.one_handed_hammer_template_1.actions.action_one.heavy_attack_2.damage_profile = "heavy_1h_hammer_os"
+	Weapons.one_handed_hammer_template_1.actions.action_one.heavy_attack_left.damage_profile = "heavy_1h_hammer_os"
+	Weapons.one_handed_hammer_template_1.actions.action_one.heavy_attack_right.damage_profile = "heavy_1h_hammer_os"
 
 	-- Push Attack
 	Weapons.one_handed_hammer_template_1.actions.action_one.light_attack_bopp.damage_profile = "push_attack_1h_hammer_os"

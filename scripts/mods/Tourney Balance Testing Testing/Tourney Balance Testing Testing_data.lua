@@ -8,7 +8,6 @@ local menu = {
 
 menu.options = {}
 menu.options.widgets = {
-	--[[
 	{
 		setting_id    = "weapons",
 		type          = "group",
@@ -24,7 +23,6 @@ menu.options.widgets = {
 			},
 		},
 	},
-	--]]
 	{
 		setting_id    = "bardin",
 		type        = "group",

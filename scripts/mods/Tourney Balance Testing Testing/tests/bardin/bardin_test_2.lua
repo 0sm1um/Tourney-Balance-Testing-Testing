@@ -1,14 +1,14 @@
 local mod = get_mod("Tourney Balance Testing Testing")
 
---[[
+
 	local num_stacks = 3
 	local num_high_tally_stacks = 5
 	local skull_splitter_buff = 0.15
---]]
+--[[
 	local num_stacks = 4
 	local num_high_tally_stacks = 6
 	local skull_splitter_buff = 0.10
-
+--]]
 
 -- Thousand Cuts
 mod:modify_talent("dr_slayer", 2, 1, {

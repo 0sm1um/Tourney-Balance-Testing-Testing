@@ -9,7 +9,7 @@ mod:dofile("scripts/mods/Tourney Balance Testing Testing/base/helper_functions")
 
 -- A series of functions for use in the activation command:
 mod.load_settings = function ()
-	--mod.settings.weapons_test_1 = mod:get("weapons_test_1")
+	mod.settings.weapons_test_1 = mod:get("weapons_test_1")
  	mod.settings.bardin_test_1 = mod:get("bardin_test_1")
 	mod.settings.bardin_test_2 = mod:get("bardin_test_2")
 	mod.settings.kruber_test_1 = mod:get("kruber_test_1")
@@ -31,11 +31,9 @@ mod.sync_mod_settings = function ()
 end
 
 mod.apply_settings = function ()
-	--[[
 	if mod.settings.weapons_test_1 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/weapons/weapons_test_1")
 	end
-	--]]
 	if mod.settings.bardin_test_1 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/bardin/bardin_test_1")
 	end
