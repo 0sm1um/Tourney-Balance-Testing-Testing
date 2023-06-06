@@ -14,9 +14,6 @@ mod.load_settings = function ()
 	mod.settings.bardin_test_2 = mod:get("bardin_test_2")
 	mod.settings.kruber_test_1 = mod:get("kruber_test_1")
 	mod.settings.saltzpyre_test_1 = mod:get("saltzpyre_test_1")
-	mod.settings.kerillian_test_1 = mod:get("kerillian_test_1")
-	mod.settings.kerillian_test_2 = mod:get("kerillian_test_2")
-	mod.settings.kerillian_test_3 = mod:get("kerillian_test_3")
  	mod.settings.kerillian_mutually_exclusive = mod:get("kerillian_mutually_exclusive")
 	--mod.settings.mutually_exclusive_test_value = mod:get(mutually_exclusive_kerillian)
 end
@@ -46,10 +43,11 @@ mod.apply_settings = function ()
 	if mod.settings.saltzpyre_test_1 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/saltzpyre/saltzpyre_test_1")
 	end
+	--[[
 	if mod.settings.kerillian_test_1 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_test_1")
 	end
-	--[[
+	
 	if mod.settings.kerillian_test_2 ~= 2 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_test_2")
 	end
@@ -63,6 +61,7 @@ mod.apply_settings = function ()
 	--if mod.settings.mutually_exclusive_test_2 ~= 1 then
 		--dofile("Experimental Changes/mutually_exclusive_test_2")
 	end
+	mod.auto_enable_new_weapons()
 end
 
 mod:network_register(settings_sync_package_id, function(sender, host_settings)

@@ -46,10 +46,10 @@ mod:add_talent("dr_slayer", 2, 2, "bardin_slayer_power_on_double_two_handed_weap
 })
 
 mod:modify_talent_buff_template("dwarf_ranger", "bardin_slayer_power_on_double_two_handed_weapons", {
-	multiplier = 0.10
+	multiplier = 0.15
 })
 
-mod:add_text("bardin_slayer_power_on_double_two_handed_weapons_desc", "Wielding two-handed weapons in both slots increases power by 10%%.")
+mod:add_text("bardin_slayer_power_on_double_two_handed_weapons_desc", "Wielding two-handed weapons in both slots increases power by 15%%.")
 mod:add_text("bardin_slayer_power_on_double_two_handed_weapons", "Skull Splitter")
 
 -- Hack and Slash
@@ -277,8 +277,8 @@ PassiveAbilitySettings.dr_2.perks = {
 		description = "career_passive_desc_dr_2c"
 	}
 }
-mod:add_text("career_passive_desc_dr_2a_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 4 times. Buff lasts 2 seconds.")
+mod:add_text("career_passive_desc_dr_2a_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 3 times. Buff lasts 2 seconds.")
 mod:add_text("career_passive_name_dr_2b", "Trophy Hunter")
-mod:add_text("career_passive_desc_dr_2b_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 4 times. Buff lasts 2 seconds.")
+mod:add_text("career_passive_desc_dr_2b_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 3 times. Buff lasts 2 seconds.")
 
 mod:echo("Osmium's Return 2 Monke Slayer Rework Loaded")

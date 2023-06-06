@@ -212,7 +212,9 @@ mod.add_chain_actions = function(action_no, action_from, new_data)
     action_no[action_from][value][row] = new_data
 end
 
-function mod.update_weapons()
+
+
+function mod.update_damage_profile_templates()
     NewDamageProfileTemplates = NewDamageProfileTemplates or {}
     for key, _ in pairs(NewDamageProfileTemplates) do
         i = #NetworkLookup.damage_profiles + 1
@@ -295,7 +297,9 @@ function mod.update_weapons()
     end
     
     DamageProfileTemplates = table.merge(DamageProfileTemplates, no_damage_templates)
-    
+end
+
+function mod.update_weapons()   
     local MeleeBuffTypes = MeleeBuffTypes or {
         MELEE_1H = true,
         MELEE_2H = true
@@ -381,4 +385,25 @@ function mod.update_weapons()
             end
         end
     end
+end
+
+function mod.auto_enable_new_weapons()   
+    BackendInterfaceItemPlayfab.get_item_template = function (self, item_data, backend_id)
+		local template_name = item_data.temporary_template or item_data.template
+		local item_template = Weapons[template_name]
+		local modified_item_templates = self._modified_templates
+		local modified_item_template = nil
+		if item_template then
+			return item_template
+		end
+		item_template = Attachments[template_name]
+		if item_template then
+			return item_template
+		end
+		item_template = Cosmetics[template_name]
+		if item_template then
+			return item_template
+		end
+		fassert(false, "no item_template for item: " .. item_data.key .. ", template name = " .. template_name)
+	end
 end

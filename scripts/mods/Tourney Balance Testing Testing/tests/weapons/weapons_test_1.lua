@@ -2,13 +2,14 @@ local mod = get_mod("Tourney Balance Testing Testing")
 
 if mod.settings.weapons_test_1 then
 	-- Big Bardin Rebalance
+	NewDamageProfileTemplates = NewDamageProfileTemplates or {}
 
 	NewDamageProfileTemplates.light_dual_axes_os = {
 		armor_modifier = {
             attack = {
 				1,
 				0.4,
-				2.5,
+				3,
 				1,
 				0.75
 			},
@@ -24,7 +25,7 @@ if mod.settings.weapons_test_1 then
 			attack_armor_power_modifer = {
 				1.25,
 				0.75,
-				2.75,
+				3.3,
 				1,
 				1
 			},
@@ -84,7 +85,7 @@ if mod.settings.weapons_test_1 then
             attack = {
                 1.25,
 				0.65,
-				2.5,
+				3,
 				1,
 				0.75,
 				0.6
@@ -102,7 +103,7 @@ if mod.settings.weapons_test_1 then
 			attack_armor_power_modifer = {
 				1.25,
 				0.75,
-				2.75,
+				3.3,
 				1,
 				1
 			},
@@ -170,7 +171,7 @@ if mod.settings.weapons_test_1 then
 			attack = {
 				1.25,
 				0.65,
-				2.5,
+				3,
 				1,
 				0.75,
 				0.6
@@ -180,7 +181,7 @@ if mod.settings.weapons_test_1 then
 			attack_armor_power_modifer = {
 				1.25,
 			  	0.75,
-			  	2.75,
+			  	3.3,
 			  	1,
 			  	1
 			},
@@ -317,8 +318,8 @@ if mod.settings.weapons_test_1 then
 		  {
 			boost_curve_coefficient_headshot = 0.75,
 			power_distribution = {
-			  impact = 0.5,
-			  attack = 0.509
+			  impact = 0.275,
+			  attack = 0.45
 			},
 			boost_curve_type = "linesman_curve",
 			armor_modifier = {
@@ -343,7 +344,7 @@ if mod.settings.weapons_test_1 then
 			boost_curve_coefficient_headshot = 0.75,
 			power_distribution = {
 			  impact = 0.15,
-			  attack = 0.283
+			  attack = 0.25
 			},
 			attack_template = "slashing_linesman",
 			boost_curve_type = "linesman_curve"
@@ -351,8 +352,17 @@ if mod.settings.weapons_test_1 then
 		  {
 			boost_curve_coefficient_headshot = 0.75,
 			power_distribution = {
-			  impact = 0.125,
-			  attack = 0.141
+			  impact = 0.1,
+			  attack = 0.15
+			},
+			attack_template = "light_slashing_linesman",
+			boost_curve_type = "linesman_curve"
+		  },
+		  {
+			boost_curve_coefficient_headshot = 0.75,
+			power_distribution = {
+			  impact = 0.075,
+			  attack = 0.125
 			},
 			attack_template = "light_slashing_linesman",
 			boost_curve_type = "linesman_curve"
@@ -377,8 +387,8 @@ if mod.settings.weapons_test_1 then
 		  }
 		},
 		cleave_distribution = {
-		  impact = 0.35,
-		  attack = 0.35
+		  impact = 0.4,
+		  attack = 0.750
 		},
 		charge_value = "heavy_attack",
 		critical_strike = {
@@ -402,8 +412,8 @@ if mod.settings.weapons_test_1 then
 		default_target = {
 		  boost_curve_coefficient_headshot = 0.75,
 		  power_distribution = {
-			impact = 0.125,
-			attack = 0.113
+			impact = 0.05,
+			attack = 0.075
 		  },
 		  attack_template = "light_slashing_linesman",
 		  boost_curve_type = "linesman_curve"
@@ -1720,6 +1730,10 @@ if mod.settings.weapons_test_1 then
 	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_right.damage_profile = "light_dual_axes_os"
     Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_back_left.damage_profile = "light_dual_axes_os"
     Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_back_right.damage_profile =  "light_dual_axes_os"
+	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_left.range_mod = 1.2        -- Increase range of light attacks
+	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_right.range_mod = 1.2
+    Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_back_left.range_mod = 1.2
+    Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_back_right.range_mod =  1.2
 
 	-- Heavies
 	Weapons.dual_wield_axes_template_1.actions.action_one.heavy_attack.anim_time_scale = 0.925  --1.035
@@ -1737,6 +1751,17 @@ if mod.settings.weapons_test_1 then
 	Weapons.dual_wield_axes_template_1.actions.action_one.push.fatigue_cost = "action_stun_push"
 	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_bopp.damage_profile_left = "push_attack_dual_axes_os"
 	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_bopp.damage_profile_right = "push_attack_dual_axes_os"
+	Weapons.dual_wield_axes_template_1.actions.action_one.light_attack_bopp.range_mod = 1.2 -- Increase range of Push Attack
+	
+	-- Dodge Distance modifications
+	Weapons.dual_wield_axes_template_1.buffs = {
+		change_dodge_distance = {
+			external_optional_multiplier = 1.1
+		},
+		change_dodge_speed = {
+			external_optional_multiplier = 1.2
+		}
+	}
 
 	-------------
 	--Great Axe--
@@ -1830,32 +1855,8 @@ if mod.settings.weapons_test_1 then
 	Weapons.dual_wield_hammers_template.actions.action_one.light_attack_bopp.damage_profile_left = "push_attack_dual_hammers_os"
 	Weapons.dual_wield_hammers_template.actions.action_one.light_attack_bopp.damage_profile_right = "push_attack_dual_hammers_os"
 
+	mod.update_damage_profile_templates()
 	mod.update_weapons()
-
-	BackendInterfaceItemPlayfab.get_item_template = function (self, item_data, backend_id)
-		local template_name = item_data.temporary_template or item_data.template
-		local item_template = Weapons[template_name]
-		local modified_item_templates = self._modified_templates
-		local modified_item_template = nil
-	
-		if item_template then
-			return item_template
-		end
-	
-		item_template = Attachments[template_name]
-	
-		if item_template then
-			return item_template
-		end
-	
-		item_template = Cosmetics[template_name]
-	
-		if item_template then
-			return item_template
-		end
-	
-		fassert(false, "no item_template for item: " .. item_data.key .. ", template name = " .. template_name)
-	end
 
 	mod:echo("Big Bardin Rebalance Applied!")
 end

@@ -1,7 +1,5 @@
 local mod = get_mod("Tourney Balance Testing Testing")
 
-Weapons.bardin_survival_ale.actions.action_one.default.total_time = 0.1
-
 mod:modify_talent_buff_template("dwarf_ranger", "bardin_ranger_passive", {
 	buff_func = "gs_bardin_ranger_scavenge_proc"
 })
@@ -56,5 +54,7 @@ mod:add_proc_function("gs_bardin_ranger_scavenge_proc", function (owner_unit, bu
 		end
 	end
 end)
+
+mod:add_text("bardin_ranger_passive_spawn_potions_or_bombs_desc", "Killing a special has a 10%% chance to drop a potion or bomb instead of a Survivalist cache.")
 
 mod:echo("Osmium's PRD Scavenger Loaded")

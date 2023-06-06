@@ -81,6 +81,7 @@ menu.options.widgets = {
 		title		  = "kerillian",
 		tooltip       = "kerillian_tooltip",
 		sub_widgets = {
+			--[[
 			{
 				setting_id      = "kerillian_test_1",
 				type            = "checkbox",
@@ -88,7 +89,7 @@ menu.options.widgets = {
 				tooltip         = "kerillian_bigwall_tooltip",
 				default_value   = false,
 			},
-			--[[
+			
 			{
 				setting_id      = "kerillian_test_2",
 				type            = "numeric",
