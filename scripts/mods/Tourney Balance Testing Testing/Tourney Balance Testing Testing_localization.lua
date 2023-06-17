@@ -36,10 +36,16 @@ return {
 		en = "Using PsuedoRandomDistribution to make Scav Drops more consistant Droprate changed to 10%%."
 	},
 	slayer_monke = {
-		en = "Return to Monke"
+		en = "Return to Monke Slayer Rework"
 	},
 	slayer_monke_tooltip = {
 		en = "Osmium's reworked Slayer. Intended to be run with the BBR weapon rebalance."
+	},
+	bomb_dupe_limit = {
+		en = "Bomb Dupe Duration Limit"
+	},
+	bomb_dupe_limit_tooltip = {
+		en = "Adds a cooldown to Bomb Dupe to last the same duration as RV's ult."
 	},
 	kruber = {
 		en = "Kruber"
@@ -112,6 +118,12 @@ return {
 	},
 	misc_tooltip = {
 		en = "Changes which don't fit neatly into other categories."
+	},
+	tank_modifier = {
+		en = "Tank Modifier Applies to Plague Monks"
+	},
+	tank_modifier_tooltip = {
+		en = "Fixes a presumed bug, which causes Tank to apply to chaos_berzerkers but not skaven_plague_monks"
 	},
 	hp = {
 		en = " %% HP"

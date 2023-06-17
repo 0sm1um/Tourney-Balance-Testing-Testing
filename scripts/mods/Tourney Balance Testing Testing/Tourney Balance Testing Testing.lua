@@ -12,6 +12,7 @@ mod.load_settings = function ()
 	mod.settings.weapons_test_1 = mod:get("weapons_test_1")
  	mod.settings.bardin_test_1 = mod:get("bardin_test_1")
 	mod.settings.bardin_test_2 = mod:get("bardin_test_2")
+	mod.settings.bardin_test_3 = mod:get("bardin_test_3")
 	mod.settings.kruber_test_1 = mod:get("kruber_test_1")
 	mod.settings.saltzpyre_test_1 = mod:get("saltzpyre_test_1")
  	mod.settings.kerillian_mutually_exclusive = mod:get("kerillian_mutually_exclusive")
@@ -37,6 +38,9 @@ mod.apply_settings = function ()
 	if mod.settings.bardin_test_2 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/bardin/bardin_test_2")
 	end
+	if mod.settings.bardin_test_3 then
+		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/bardin/bardin_test_3")
+	end
 	if mod.settings.kruber_test_1 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kruber/kruber_test_1")
 	end
@@ -57,9 +61,9 @@ mod.apply_settings = function ()
 	--]]
 	if mod.settings.mutually_exclusive_kerillian then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_mutually_exclusive_test")
-	--end
-	--if mod.settings.mutually_exclusive_test_2 ~= 1 then
-		--dofile("Experimental Changes/mutually_exclusive_test_2")
+	end
+	if mod.settings.MISC_test_1 then
+		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/MISC/MISC_test_1")
 	end
 	mod.auto_enable_new_weapons()
 end
@@ -68,14 +72,14 @@ mod:network_register(settings_sync_package_id, function(sender, host_settings)
 	--mod:echo("Received settings from host.")
 	if mod.is_on == true then
 		local client_mod_settings = table.clone(mod.settings)
-		if check_legality_of_setting_changes(client_mod_settings, host_settings) == false then
+		if mod.check_legality_of_setting_changes(client_mod_settings, host_settings) == false then
 			mod:echo("WARNING: TB Testing Testing has code active while different changes are attempted to be loaded. Please restart your game to ensure tests unload correctly.")
 			mod.settings = old_mod_settings
 			return
 		end
 	end
 	mod.settings = host_settings
-	apply_settings()
+	mod.apply_settings()
 	mod.is_on = true
 end)
 
@@ -84,7 +88,7 @@ mod.on_user_joined = function(player)
 	if Managers.player.is_server then
 		--mod:echo("New player connecting, clients syncing with host settings.")
 		if mod.is_on == true then
-			sync_mod_settings()
+			mod.sync_mod_settings()
 		end
 	end
 end

@@ -43,6 +43,13 @@ menu.options.widgets = {
 				tooltip       = "slayer_monke_tooltip",
 				default_value = false
 			},
+			{
+				setting_id    = "bardin_test_3",
+				type          = "checkbox",
+				title		  = "bomb_dupe_limit",
+				tooltip       = "bomb_dupe_limit_tooltip",
+				default_value = false
+			},
 		},
 	},
 	{
@@ -143,7 +150,6 @@ menu.options.widgets = {
 		},
 	},
 	--]]
-	--[[
 	{
 		setting_id    = "misc",
 		type        = "group",
@@ -151,15 +157,15 @@ menu.options.widgets = {
 		tooltip       = "misc_tooltips",
 		sub_widgets = {
 			{
-				setting_id    = "misc_test",
+				setting_id    = "misc_test_1",
 				type          = "checkbox",
-				title		  = "misc",
-				tooltip       = "misc_tooltip",
+				title		  = "tank_modifier",
+				tooltip       = "tank_modifier_tooltip",
 				default_value = false
 			},
 		},
 	},
-	--]]
+	
 }
 
 return menu

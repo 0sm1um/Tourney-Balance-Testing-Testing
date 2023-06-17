@@ -842,7 +842,7 @@ if mod.settings.weapons_test_1 then
 			attack_template = "heavy_blunt_tank",
 			power_distribution = {
 			  impact = 0.3,
-			  attack = 0.311
+			  attack = 0.4
 			},
 			armor_modifier = {
 			  impact = {
@@ -866,7 +866,7 @@ if mod.settings.weapons_test_1 then
 			attack_template = "heavy_blunt_tank",
 			power_distribution = {
 			  impact = 0.225,
-			  attack = 0.170
+			  attack = 0.225
 			},
 			boost_curve_type = "tank_curve"
 		  },
@@ -874,7 +874,7 @@ if mod.settings.weapons_test_1 then
 			attack_template = "blunt_tank",
 			power_distribution = {
 			  impact = 0.2,
-			  attack = 0.085
+			  attack = 0.1125
 			},
 			boost_curve_type = "tank_curve"
 		  }
@@ -883,13 +883,13 @@ if mod.settings.weapons_test_1 then
 		  attack_template = "blunt_tank",
 		  power_distribution = {
 			impact = 0.125,
-			attack = 0.057
+			attack = 0.075
 		  },
 		  boost_curve_type = "tank_curve"
 		},
 		cleave_distribution = {
 		  impact = 0.8,
-		  attack = 0.3
+		  attack = 0.5
 		},
 		charge_value = "heavy_attack",
 		critical_strike = {
@@ -919,7 +919,9 @@ if mod.settings.weapons_test_1 then
 			attack = 0.283,
 			impact = 0.175
 		  },
-		  boost_curve_type = "smiter_curve"
+		  boost_curve_type = "smiter_curve",
+		  boost_curve_coefficient_headshot = 0.9,
+		  
 		},
 		ignore_stagger_reduction = true,
 		armor_modifier = {
@@ -1774,6 +1776,11 @@ if mod.settings.weapons_test_1 then
 	-- Heavies
 	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_right.damage_profile = "heavy_great_axe_os"
 	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_left.damage_profile = "heavy_great_axe_os"
+	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_right.slide_armour_hit = true
+	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_left.slide_armour_hit = true
+	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_right.hit_mass_count = LINESMAN_HIT_MASS_COUNT
+	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_left.hit_mass_count = LINESMAN_HIT_MASS_COUNT
+
 	-- Push Attack
 	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_bopp.damage_profile = "push_attack_great_axe_os"
 
@@ -1860,3 +1867,4 @@ if mod.settings.weapons_test_1 then
 
 	mod:echo("Big Bardin Rebalance Applied!")
 end
+require 'pl.pretty'.dump(AttackTemplates)
