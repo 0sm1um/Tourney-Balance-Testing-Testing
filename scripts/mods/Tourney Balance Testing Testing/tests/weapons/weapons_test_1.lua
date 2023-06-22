@@ -919,9 +919,8 @@ if mod.settings.weapons_test_1 then
 			attack = 0.283,
 			impact = 0.175
 		  },
-		  boost_curve_type = "smiter_curve",
-		  boost_curve_coefficient_headshot = 0.9,
-		  
+		boost_curve_type = "smiter_curve",
+		boost_curve_coefficient_headshot = 0.75,
 		},
 		ignore_stagger_reduction = true,
 		armor_modifier = {
@@ -935,11 +934,11 @@ if mod.settings.weapons_test_1 then
 		  },
 		  attack = {
 			1.25,
-			0.65,
+			0.5,
 			2.5,
 			1,
 			0.75,
-			0.6
+			0.5
 		  }
 		},
 		targets = {
@@ -999,12 +998,13 @@ if mod.settings.weapons_test_1 then
 			impact = 0.25,
 			attack = 0.452
 		  },
-		  boost_curve_type = "smiter_curve"
+		boost_curve_type = "smiter_curve",
+		boost_curve_coefficient_headshot = 2,
 		},
 		critical_strike = {
 		  attack_armor_power_modifer = {
 			1,
-			0.8,
+			1,
 			2.5,
 			1,
 			1,
@@ -1028,7 +1028,7 @@ if mod.settings.weapons_test_1 then
 		  },
 		  attack = {
 			1,
-			0.8,
+			1,
 			2,
 			1,
 			0.75,
@@ -1051,15 +1051,15 @@ if mod.settings.weapons_test_1 then
 		  impact = 0.075,
 		  attack = 0.075
 		}
-	  }
+	}
 
 	NewDamageProfileTemplates.push_attack_1h_axe_os  = {
 		targets = {
 		  [2] = {
 			attack_template = "slashing_smiter",
 			power_distribution = {
-			  impact = 0.075,
-			  attack = 0.085
+				impact = 0.075,
+				attack = 0.085
 			},
 			armor_modifier = {
 			  impact = {
@@ -1071,13 +1071,14 @@ if mod.settings.weapons_test_1 then
 			  },
 			  attack = {
 				1,
-				0.25,
+				0.65,
 				1,
 				1,
 				0.75
 			  }
 			},
-			boost_curve_type = "smiter_curve"
+		boost_curve_type = "smiter_curve",
+		boost_curve_coefficient = 2,
 		  }
 		},
 		ignore_stagger_reduction = true,
@@ -1819,13 +1820,33 @@ if mod.settings.weapons_test_1 then
 	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_left.damage_profile = "light_1h_axe_os"
 	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_right.damage_profile = "light_1h_axe_os"
     Weapons.one_hand_axe_template_1.actions.action_one.light_attack_last.damage_profile = "light_1h_axe_os"
+	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_left.range_mod = 1.2        -- Increase range of light attacks
+	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_right.range_mod = 1.2
+    Weapons.one_hand_axe_template_1.actions.action_one.light_attack_last.range_mod = 1.2
 
 	-- Heavies
 	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack_left.damage_profile = "heavy_1h_axe_os"
 	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack_right.damage_profile = "heavy_1h_axe_os"
+	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack_left.range_mod = 1.2
+	Weapons.one_hand_axe_template_1.actions.action_one.heavy_attack_right.range_mod = 1.2
+	Weapons.one_hand_axe_template_2.actions.action_one.heavy_attack_left.range_mod = 1.2
+	Weapons.one_hand_axe_template_2.actions.action_one.heavy_attack_right.range_mod = 1.2
 
 	-- Push Attack
 	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_bopp.damage_profile = "push_attack_1h_axe_os"
+
+	-- Dodge Distance modifications
+	Weapons.one_hand_axe_template_1.buffs = {
+		change_dodge_distance = {
+			external_optional_multiplier = 1.1
+		},
+		change_dodge_speed = {
+			external_optional_multiplier = 1.2
+		}
+	}
+
+	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_last.anim_time_scale = 1.3 --1.035
+	Weapons.one_hand_axe_template_2.actions.action_one.light_attack_last.anim_time_scale = 1.3 --1.035
 
 	-------------
 	--1h Hammer--

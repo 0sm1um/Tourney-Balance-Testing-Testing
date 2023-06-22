@@ -125,6 +125,12 @@ return {
 	tank_modifier_tooltip = {
 		en = "Fixes a presumed bug, which causes Tank to apply to chaos_berzerkers but not skaven_plague_monks"
 	},
+	thp_stagger_rebalance = {
+		en = "THP and Stagger Rebalance"
+	},
+	thp_stagger_rebalance_tooltip = {
+		en = "Applies the THP Stagger rebalance talents from TB."
+	},
 	hp = {
 		en = " %% HP"
 	},

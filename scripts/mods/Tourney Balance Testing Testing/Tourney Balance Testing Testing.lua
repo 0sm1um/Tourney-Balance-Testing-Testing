@@ -17,6 +17,8 @@ mod.load_settings = function ()
 	mod.settings.saltzpyre_test_1 = mod:get("saltzpyre_test_1")
  	mod.settings.kerillian_mutually_exclusive = mod:get("kerillian_mutually_exclusive")
 	--mod.settings.mutually_exclusive_test_value = mod:get(mutually_exclusive_kerillian)
+	mod.settings.misc_test_1 = mod:get("misc_test_1")
+	mod.settings.misc_test_2 = mod:get("misc_test_2")
 end
 
 mod.sync_mod_settings = function ()
@@ -51,19 +53,15 @@ mod.apply_settings = function ()
 	if mod.settings.kerillian_test_1 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_test_1")
 	end
-	
-	if mod.settings.kerillian_test_2 ~= 2 then
-		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_test_2")
-	end
-	if mod.settings.kerillian_test_2 ~= 0.5 then
-		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/weapons/weapons_test_3")
-	end
 	--]]
 	if mod.settings.mutually_exclusive_kerillian then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kerillian/kerillian_mutually_exclusive_test")
 	end
-	if mod.settings.MISC_test_1 then
+	if mod.settings.misc_test_1 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/MISC/MISC_test_1")
+	end
+	if mod.settings.misc_test_2 then
+		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/MISC/MISC_test_2")
 	end
 	mod.auto_enable_new_weapons()
 end

@@ -163,6 +163,13 @@ menu.options.widgets = {
 				tooltip       = "tank_modifier_tooltip",
 				default_value = false
 			},
+			{
+				setting_id    = "misc_test_2",
+				type          = "checkbox",
+				title		  = "thp_stagger_rebalance",
+				tooltip       = "thp_stagger_rebalance_tooltip",
+				default_value = false
+			},
 		},
 	},
 	
