@@ -55,8 +55,10 @@ mod.apply_settings = function ()
 	if mod.settings.misc_test_2 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/MISC/MISC_test_2")
 	end
-	mod.update_weapons()
-	mod.auto_enable_new_weapons()
+	if mod.is_on == false then
+		mod.update_weapons()
+		mod.auto_enable_new_weapons()
+	end
 end
 
 mod:network_register(settings_sync_package_id, function(sender, host_settings)

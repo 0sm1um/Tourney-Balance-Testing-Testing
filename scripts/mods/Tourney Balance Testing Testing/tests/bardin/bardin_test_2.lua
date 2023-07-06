@@ -285,4 +285,4 @@ mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_increased_defence
 mod:add_text("rebaltourn_career_passive_name_dr_2d", "Juggernaut")
 mod:add_text("rebaltourn_career_passive_desc_dr_2d_2", "Reduces damage taken by 15%.")
 
-mod:echo("Osmium's Return 2 Monke Slayer Rework Loaded")
+mod:echo("Osmium's Slayer Rework Loaded")
