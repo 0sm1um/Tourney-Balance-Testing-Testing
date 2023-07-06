@@ -43,13 +43,11 @@ mod.add_buff = function(buff_name, buff_data)
     NetworkLookup.buff_templates[buff_name] = index
 end
 
-mod.update_buff_templates_ = function()
+mod.update_buff_templates = function()
 	for _, buffs in pairs(TalentBuffTemplates) do
 		table.merge_recursive(BuffTemplates, buffs)
 	end
-
 	return
-
 end
 
 -- Buff and Talent Functions
@@ -161,6 +159,7 @@ function mod.add_buff(self, owner_unit, buff_name)
         end
     end
 end
+
 function mod.add_talent(self, career_name, tier, index, new_talent_name, new_talent_data)
     local career_settings = CareerSettings[career_name]
     local hero_name = career_settings.profile_name
@@ -212,9 +211,7 @@ mod.add_chain_actions = function(action_no, action_from, new_data)
     action_no[action_from][value][row] = new_data
 end
 
-
-
-function mod.update_damage_profile_templates()
+mod.update_damage_profile_templates  = function()
     NewDamageProfileTemplates = NewDamageProfileTemplates or {}
     for key, _ in pairs(NewDamageProfileTemplates) do
         i = #NetworkLookup.damage_profiles + 1
@@ -299,7 +296,8 @@ function mod.update_damage_profile_templates()
     DamageProfileTemplates = table.merge(DamageProfileTemplates, no_damage_templates)
 end
 
-function mod.update_weapons()   
+mod.update_weapons =  function ()
+    mod.update_damage_profile_templates()
     local MeleeBuffTypes = MeleeBuffTypes or {
         MELEE_1H = true,
         MELEE_2H = true
@@ -387,7 +385,7 @@ function mod.update_weapons()
     end
 end
 
-function mod.auto_enable_new_weapons()   
+function mod.auto_enable_new_weapons()
     BackendInterfaceItemPlayfab.get_item_template = function (self, item_data, backend_id)
 		local template_name = item_data.temporary_template or item_data.template
 		local item_template = Weapons[template_name]

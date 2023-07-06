@@ -216,15 +216,6 @@ mod:add_text("gs_bardin_slayer_push_on_dodge_desc", "Effective dodges pushes nea
 
 --DamageProfileTemplates.slayer_leap_landing_impact.default_target.power_distribution.impact = 1.2
 
-mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_increased_defence", {
-	stat_buff = "damage_taken",
-	multiplier = 0
-})
---[[
-mod:add_text("rebaltourn_career_passive_name_dr_2d", "Juggernaut")
-mod:add_text("rebaltourn_career_passive_desc_dr_2d_2", "Reduces damage taken by 0%.")
---]]
-
 -- Trophy Hunter Power Buff
 mod:modify_talent_buff_template("dwarf_ranger", "bardin_slayer_passive_stacking_damage_buff_on_hit", {
 	buff_func = "gs_add_bardin_slayer_passive_buff",
@@ -275,10 +266,23 @@ PassiveAbilitySettings.dr_2.perks = {
 	{
 		display_name = "career_passive_name_dr_2c",
 		description = "career_passive_desc_dr_2c"
+	},
+	{
+		display_name = "rebaltourn_career_passive_name_dr_2d",
+		description = "rebaltourn_career_passive_desc_dr_2d_2"
 	}
 }
 mod:add_text("career_passive_desc_dr_2a_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 3 times. Buff lasts 2 seconds.")
 mod:add_text("career_passive_name_dr_2b", "Trophy Hunter")
 mod:add_text("career_passive_desc_dr_2b_2", "Hitting an enemy grants a stacking power buff. Increased power by 5%, stacking 3 times. Buff lasts 2 seconds.")
+
+-- Juggernaut Passive
+mod:add_talent_buff_template("dwarf_ranger", "gs_bardin_slayer_increased_defence", {
+	stat_buff = "damage_taken",
+	multiplier = -0.15
+})
+
+mod:add_text("rebaltourn_career_passive_name_dr_2d", "Juggernaut")
+mod:add_text("rebaltourn_career_passive_desc_dr_2d_2", "Reduces damage taken by 15%.")
 
 mod:echo("Osmium's Return 2 Monke Slayer Rework Loaded")

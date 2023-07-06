@@ -243,7 +243,7 @@ if mod.settings.weapons_test_1 then
 		  attack_template = "slashing_smiter",
 		  power_distribution = {
 			impact = 0.2,
-			attack = 0.367
+			attack = 0.325
 		  },
 		  armor_modifier = {
 			impact = {
@@ -254,20 +254,21 @@ if mod.settings.weapons_test_1 then
 			  0.75
 			},
 			attack = {
-			  1.25,
-			  0.8,
-			  2.5,
-			  1,
-			  0.75
+			  1.66,
+			  0.85,
+			  1.8,
+			  0.75,
+			  0.8
 			}
 		  },
 		  boost_curve_type = "smiter_curve"
 		},
+		boost_curve_coefficient_headshot = 1.25,
 		critical_strike = {
 		  attack_armor_power_modifer = {
 			1.25,
 			0.8,
-			2.5,
+			2.25,
 			1,
 			1
 		  },
@@ -288,11 +289,11 @@ if mod.settings.weapons_test_1 then
 			0.75
 		  },
 		  attack = {
+			1.66,
+			0.85,
+			2.5,
 			1,
-			0.8,
-			1.75,
-			1,
-			0.75
+			0.8
 		  }
 		},
 		targets = {
@@ -419,47 +420,59 @@ if mod.settings.weapons_test_1 then
 		  boost_curve_type = "linesman_curve"
 		}
 	}
+
 	NewDamageProfileTemplates.push_attack_great_axe_os  = {
 		targets = {
 		  {
-			boost_curve_coefficient_headshot = 1.5,
+			boost_curve_coefficient_headshot = 0.75,
 			power_distribution = {
-			  impact = 0.2,
-			  attack = 0.283
+			  impact = 0.275,
+			  attack = 0.35
 			},
 			boost_curve_type = "linesman_curve",
 			armor_modifier = {
-			  impact = {
-				0.9,
+				impact = {
+				1,
+				0.5,
+				1,
+				1,
+				0.75
+				},
+				attack = {
+				1.66,
+				0.85,
+				1.8,
 				0.75,
-				1,
-				1,
-				0.75
-			  },
-			  attack = {
-				1,
-				0.3,
-				1.5,
-				1,
-				0.75
-			  }
+				0.8
+				}
 			},
 			attack_template = "heavy_slashing_linesman"
 		  },
 		  {
-			attack_template = "slashing_linesman",
+			boost_curve_coefficient_headshot = 0.75,
 			power_distribution = {
-			  impact = 0.125,
-			  attack = 0.170
+			  impact = 0.15,
+			  attack = 0.25
 			},
+			attack_template = "slashing_linesman",
 			boost_curve_type = "linesman_curve"
 		  },
 		  {
-			attack_template = "light_slashing_linesman",
+			boost_curve_coefficient_headshot = 0.75,
 			power_distribution = {
 			  impact = 0.1,
-			  attack = 0.113
+			  attack = 0.15
 			},
+			attack_template = "light_slashing_linesman",
+			boost_curve_type = "linesman_curve"
+		  },
+		  {
+			boost_curve_coefficient_headshot = 0.75,
+			power_distribution = {
+			  impact = 0.075,
+			  attack = 0.125
+			},
+			attack_template = "light_slashing_linesman",
 			boost_curve_type = "linesman_curve"
 		  }
 		},
@@ -469,30 +482,34 @@ if mod.settings.weapons_test_1 then
 			0.5,
 			1,
 			1,
-			0.75
+			0.75,
+			0.25
 		  },
 		  attack = {
 			0.9,
 			0,
 			1.5,
 			1,
-			0.75
+			0.75,
+			0
 		  }
 		},
 		cleave_distribution = {
-		  impact = 0.25,
-		  attack = 0.275
+		  impact = 0.4,
+		  attack = 0.750
 		},
-		charge_value = "light_attack",
+		charge_value = "heavy_attack",
 		critical_strike = {
 		  attack_armor_power_modifer = {
 			1,
-			0.5,
-			1.5,
+			0.75,
+			2,
 			1,
-			1
+			1,
+			0.75
 		  },
 		  impact_armor_power_modifer = {
+			1,
 			1,
 			1,
 			1,
@@ -501,11 +518,12 @@ if mod.settings.weapons_test_1 then
 		  }
 		},
 		default_target = {
-		  attack_template = "light_slashing_linesman",
+		  boost_curve_coefficient_headshot = 0.75,
 		  power_distribution = {
-			impact = 0.075,
+			impact = 0.05,
 			attack = 0.075
 		  },
+		  attack_template = "light_slashing_linesman",
 		  boost_curve_type = "linesman_curve"
 		}
 	}
@@ -925,7 +943,7 @@ if mod.settings.weapons_test_1 then
 	-------------
 	--Great Axe--
 	-------------
-	
+
 	-- Lights
 	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_left.damage_profile = "light_great_axe_os"
 	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_right.damage_profile = "light_great_axe_os"
@@ -933,13 +951,34 @@ if mod.settings.weapons_test_1 then
 	-- Heavies
 	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_right.damage_profile = "heavy_great_axe_os"
 	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_left.damage_profile = "heavy_great_axe_os"
-	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_right.slide_armour_hit = true
-	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_left.slide_armour_hit = true
 	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_right.hit_mass_count = LINESMAN_HIT_MASS_COUNT
 	Weapons.two_handed_axes_template_1.actions.action_one.heavy_attack_left.hit_mass_count = LINESMAN_HIT_MASS_COUNT
 
 	-- Push Attack
 	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_bopp.damage_profile = "push_attack_great_axe_os"
+	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_bopp.hit_mass_count = LINESMAN_HIT_MASS_COUNT
+	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_bopp.anim_time_scale = 0.85                -- 0.99
+	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_bopp.additional_critical_strike_chance = 0.1
+	Weapons.two_handed_axes_template_1.actions.action_one.light_attack_bopp.buff_data = {
+		{
+			start_time = 0,
+			external_multiplier = 0.8,
+			end_time = 0.2,
+			buff_name = "planted_decrease_movement"
+		},
+		{
+			start_time = 0.2,
+			external_multiplier = 1.4,
+			end_time = 0.35,
+			buff_name = "planted_fast_decrease_movement"
+		},
+		{
+			start_time = 0.5,
+			external_multiplier = 0.8,
+			end_time = 0.8,
+			buff_name = "planted_decrease_movement"
+		}
+	}
 
 	--------------
 	--Cog Hammer--
@@ -990,9 +1029,6 @@ if mod.settings.weapons_test_1 then
 
 	Weapons.one_hand_axe_template_1.actions.action_one.light_attack_last.anim_time_scale = 1.3 --1.035
 	Weapons.one_hand_axe_template_2.actions.action_one.light_attack_last.anim_time_scale = 1.3 --1.035
-
-	mod.update_damage_profile_templates()
-	mod.update_weapons()
 
 	mod:echo("Big Bardin Rebalance Applied!")
 end

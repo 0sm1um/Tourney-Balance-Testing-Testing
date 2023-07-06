@@ -43,13 +43,6 @@ menu.options.widgets = {
 				tooltip       = "slayer_monke_tooltip",
 				default_value = false
 			},
-			{
-				setting_id    = "bardin_test_3",
-				type          = "checkbox",
-				title		  = "bomb_dupe_limit",
-				tooltip       = "bomb_dupe_limit_tooltip",
-				default_value = false
-			},
 		},
 	},
 	{

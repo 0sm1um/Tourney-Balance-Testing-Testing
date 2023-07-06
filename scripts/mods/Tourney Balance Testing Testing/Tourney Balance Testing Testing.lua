@@ -12,21 +12,16 @@ mod.load_settings = function ()
 	mod.settings.weapons_test_1 = mod:get("weapons_test_1")
  	mod.settings.bardin_test_1 = mod:get("bardin_test_1")
 	mod.settings.bardin_test_2 = mod:get("bardin_test_2")
-	mod.settings.bardin_test_3 = mod:get("bardin_test_3")
 	mod.settings.kruber_test_1 = mod:get("kruber_test_1")
 	mod.settings.saltzpyre_test_1 = mod:get("saltzpyre_test_1")
  	mod.settings.kerillian_mutually_exclusive = mod:get("kerillian_mutually_exclusive")
-	--mod.settings.mutually_exclusive_test_value = mod:get(mutually_exclusive_kerillian)
 	mod.settings.misc_test_1 = mod:get("misc_test_1")
 	mod.settings.misc_test_2 = mod:get("misc_test_2")
 end
 
 mod.sync_mod_settings = function ()
 	--mod:echo("Syncing settings with clients.")
-	mod:network_send(
-		settings_sync_package_id,
-		"others",
-		mod.settings
+	mod:network_send(settings_sync_package_id, "others", mod.settings
 	)
 end
 
@@ -39,9 +34,6 @@ mod.apply_settings = function ()
 	end
 	if mod.settings.bardin_test_2 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/bardin/bardin_test_2")
-	end
-	if mod.settings.bardin_test_3 then
-		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/bardin/bardin_test_3")
 	end
 	if mod.settings.kruber_test_1 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/kruber/kruber_test_1")
@@ -63,6 +55,7 @@ mod.apply_settings = function ()
 	if mod.settings.misc_test_2 then
 		mod:dofile("scripts/mods/Tourney Balance Testing Testing/tests/MISC/MISC_test_2")
 	end
+	mod.update_weapons()
 	mod.auto_enable_new_weapons()
 end
 
